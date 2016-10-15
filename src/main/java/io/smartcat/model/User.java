@@ -11,13 +11,12 @@ import com.google.common.collect.Lists;
 @Document(collection = "users")
 public class User {
 	
-	private String uuid;
 	private String username;
 	private String firstname;
 	private String lastname;
 	private Date birthDate;
 	
-	private Integer numberOfCards;
+	private long numberOfCards;
 	
 	private final List<String> favoriteMovies = Lists.newArrayList();
 	
@@ -25,12 +24,6 @@ public class User {
 	
 	// getters and setters
 	
-	public String getUuid() {
-		return uuid;
-	}
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 	public String getUsername() {
 		return username;
 	}
@@ -55,10 +48,10 @@ public class User {
 	public void setBirthDate(Date birthDate) {
 		this.birthDate = birthDate;
 	}
-	public Integer getNumberOfCards() {
+	public long getNumberOfCards() {
 		return numberOfCards;
 	}
-	public void setNumberOfCards(Integer numberOfCards) {
+	public void setNumberOfCards(long numberOfCards) {
 		this.numberOfCards = numberOfCards;
 	}
 	public List<String> getFavoriteMovies() {
