@@ -163,7 +163,7 @@ public class UserTest {
 		LocalDateTime yougnestBirthDateX = LocalDateTime.of(1988, 1, 1,0,0);
 		
 		exclusiveUserBuilder
-			.randomUsernameFrom("krelac", "pevac")
+			.randomUsernameFromX("krelac")
 			.randomBirthDateBetweenX(oldestBirthDateX, yougnestBirthDateX)
 			.toBeBuilt(1);
 		
@@ -175,7 +175,6 @@ public class UserTest {
 		List<User> userList = runner.build();
 		
 		Assert.assertEquals(6, userList.size());
-		
 		
 	}
 

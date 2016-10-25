@@ -1,6 +1,7 @@
 package io.smartcat.model;
 
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import com.google.common.collect.Lists;
@@ -33,9 +34,19 @@ public class BuildRunner {
 		builderSet.add(builder);
 	}
 	
+	// recalculates rules by taking into account exclusive rules
 	private void recalculateRules() {
-		// TODO Auto-generated method stub
+		// TODO
 		
+//		for (RandomBuilder randomBuilder : builderSet) {
+//			
+//			for (Entry<String, Rule> entry : randomBuilder.getFieldRules().entrySet()) {
+//				String fieldName = entry.getKey();
+//				Rule rule = entry.getValue();
+//				if (rule.isExclusive()) {
+//				}
+//			}
+//		}
 	}
 
 }
