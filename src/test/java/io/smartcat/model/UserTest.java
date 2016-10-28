@@ -149,23 +149,23 @@ public class UserTest {
 	public void buildRunnerTest() {
 		RandomBuilder randomUserBuilder = new RandomBuilder();
 		
-		LocalDateTime oldestBirthDate = LocalDateTime.of(1950, 1, 1,0,0);
+		LocalDateTime oldestBirthDate = LocalDateTime.of(1975, 1, 1,0,0);
 		LocalDateTime yougnestBirthDate = LocalDateTime.of(2000, 1, 1,0,0);
 		
 		randomUserBuilder
-				.randomUsernameFrom("destroyerOfW0rldz", "univerzalBlack", "johnycage", "subzero", "krelac", "pevac", "hardy")
+				.randomUsernameFrom("destroyerOfW0rldz", "univerzalBlack", "johnycage", "subzero", "krelac", "pevac")
 				.randomBirthDateBetween(oldestBirthDate, yougnestBirthDate)
 				.toBeBuilt(5);
 		
 		RandomBuilder exclusiveUserBuilder = new RandomBuilder();
 		
 		LocalDateTime oldestBirthDateX = LocalDateTime.of(1985, 1, 1,0,0);
-		LocalDateTime yougnestBirthDateX = LocalDateTime.of(1988, 1, 1,0,0);
+		LocalDateTime yougnestBirthDateX = LocalDateTime.of(1985, 1, 2,0,0);
 		
 		exclusiveUserBuilder
-			.randomUsernameFromX("krelac")
+			.randomUsernameFromX("destroyerOfW0rldz", "univerzalBlack", "johnycage", "subzero")
 			.randomBirthDateBetweenX(oldestBirthDateX, yougnestBirthDateX)
-			.toBeBuilt(1);
+			.toBeBuilt(3);
 		
 		BuildRunner runner = new BuildRunner();
 		
@@ -174,7 +174,9 @@ public class UserTest {
 		
 		List<User> userList = runner.build();
 		
-		Assert.assertEquals(6, userList.size());
+		userList.stream().forEach(System.out::println);
+		
+		Assert.assertEquals(8, userList.size());
 		
 	}
 

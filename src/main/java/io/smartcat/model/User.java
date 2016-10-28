@@ -69,6 +69,11 @@ public class User {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-	
+	@Override
+	public String toString() {
+		return "User [username=" + username + ", firstname=" + firstname + ", lastname=" + lastname + ", birthDate="
+				+ birthDate + ", numberOfCards=" + numberOfCards + ", favoriteMovies=" + favoriteMovies + ", address="
+				+ address + "]";
+	}
 
 }

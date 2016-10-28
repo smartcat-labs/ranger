@@ -53,7 +53,7 @@ public class DiscreteRule implements Rule<String> {
 	}
 
 	@Override
-	public Rule recalculatePrecedance(Rule exclusiveRule) {
+	public Rule<String> recalculatePrecedance(Rule exclusiveRule) {
 		if (!exclusiveRule.isExclusive()) {
 			throw new IllegalArgumentException("no need to calculate rule precedance with non exclusive rule");
 		}

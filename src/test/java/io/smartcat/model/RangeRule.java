@@ -1,7 +1,9 @@
 package io.smartcat.model;
 
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.IntStream;
 
 import org.assertj.core.util.Lists;
 
@@ -14,6 +16,8 @@ public final class RangeRule implements Rule<Long> {
 	// definition of the range: e.g [a,b,c,d] : a < b <= c < d is a set of ranges: {[a,b),[c,d)}
 	// or [a,b,c] : a<b<c is a set of ranges: {[a,b), [c, infinity)} ? should this be currently allowed?
 	private List<Long> ranges = Lists.newArrayList();
+	
+	private Random random = new Random();
 	
 	private RangeRule() {};
 	
@@ -55,7 +59,7 @@ public final class RangeRule implements Rule<Long> {
 	}
 	
 	@Override
-	public Rule recalculatePrecedance(Rule exclusiveRule) {
+	public Rule<Long> recalculatePrecedance(Rule exclusiveRule) {
 		if (!exclusiveRule.isExclusive()) {
 			throw new IllegalArgumentException("no need to calculate rule precedance with non exclusive rule");
 		}
@@ -116,10 +120,22 @@ public final class RangeRule implements Rule<Long> {
 
 	@Override
 	public Long getRandomAllowedValue() {
-		int randomRangeIndex = ThreadLocalRandom.current().nextInt(0, ranges.size() - 1);
+		// ranges = [a,b,c,d]
+		// =>
+		// (a,b],(c,d]
+		//   0  ,  1
+		int randomRangeIndex = 0;
+		if (ranges.size() > 2) {
+			randomRangeIndex = ThreadLocalRandom.current().nextInt(0, ranges.size() / 2);
+		}
 		System.out.println("size is: " + ranges.size());
 		System.out.println("randomRangeIdex is: " + randomRangeIndex);
-		Long randomBirthDate = ThreadLocalRandom.current().nextLong(ranges.get(randomRangeIndex), ranges.get(randomRangeIndex+1));
+		
+		// randomRangeIndex == 0 => index1 = 0, index2 = 1;
+		// randomRangeIndex == 1 => index1 = 2, index2 = 3;
+		// randomRangeIndex == 2 => index1 = 4, index2 = 5;
+		// randomRangeIndex == 3 => index1 = 6, index2 = 7;
+		Long randomBirthDate = ThreadLocalRandom.current().nextLong(ranges.get(randomRangeIndex * 2), ranges.get((randomRangeIndex * 2)+1));
 		return randomBirthDate;
 	}
 	
