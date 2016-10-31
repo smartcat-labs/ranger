@@ -16,38 +16,65 @@ public class RandomBuilder {
 	
 	private Map<String,Rule<? extends Comparable<?>>> fieldRules = Maps.newHashMap();
 	
-	private int numberOfUsers;
+	private int numberOfObjects;
 	
-	public RandomBuilder randomUsernameFrom(String... usernames) {
-		fieldRules.put("username", DiscreteRule.newSet(usernames));
-		return this;
-	}
+	private Map<String, RandomBuilder> nestedObjectBuilderMap = Maps.newHashMap();
 	
-	public RandomBuilder randomUsernameFromX(String... usernames) {
-		fieldRules.put("username", DiscreteRule.newSetExclusive( usernames));
-		return this;
-	}
-	
-	public RandomBuilder randomBirthDateBetween(LocalDateTime startDate, LocalDateTime endDate) {
-		Long lower = startDate.toInstant(ZoneOffset.UTC).toEpochMilli();
-		long upper = endDate.toInstant(ZoneOffset.UTC).toEpochMilli();
-		
-		fieldRules.put("birthDate", RangeRule.withRanges(lower, upper));
-		
-		return this;
-	}
-	
-	public RandomBuilder randomBirthDateBetweenX(LocalDateTime startDate, LocalDateTime endDate) {
+	public RandomBuilder randomFromRange(String fieldName, LocalDateTime startDate, LocalDateTime endDate) {
 		long lower = startDate.toInstant(ZoneOffset.UTC).toEpochMilli();
 		long upper = endDate.toInstant(ZoneOffset.UTC).toEpochMilli();
 		
-		fieldRules.put("birthDate", RangeRule.withRangesX(lower, upper));
+		fieldRules.put(fieldName, RangeRule.withRanges(lower, upper));
 		
 		return this;
 	}
 	
-	public RandomBuilder toBeBuilt(int numbeerOfUsers) {
-		this.numberOfUsers = numbeerOfUsers;
+	public RandomBuilder exclusiveRandomFromRange(String fieldName, LocalDateTime startDate, LocalDateTime endDate) {
+		long lower = startDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+		long upper = endDate.toInstant(ZoneOffset.UTC).toEpochMilli();
+		
+		fieldRules.put(fieldName, RangeRule.withRangesX(lower, upper));
+		
+		return this;
+	}
+	
+	public RandomBuilder randomFromRange(String fieldName, Long lower, Long upper) {
+		fieldRules.put(fieldName, RangeRule.withRanges(lower, upper));
+		return this;
+	}
+	
+	public RandomBuilder exclusiveRandomFromRange(String fieldName, Long lower, Long upper) {
+		fieldRules.put(fieldName, RangeRule.withRangesX(lower, upper));
+		return this;
+	}
+	
+	public RandomBuilder randomFromRange(String fieldName, Double lower, Double upper) {
+		fieldRules.put(fieldName, RangeRuleDouble.withRanges(lower, upper));
+		return this;
+	}
+	
+	public RandomBuilder exclusiveRandomFromRange(String fieldName, Double lower, Double upper) {
+		fieldRules.put(fieldName, RangeRuleDouble.withRangesX(lower, upper));
+		return this;
+	}
+	
+	public RandomBuilder randomFrom(String fieldName, String... values) {
+		fieldRules.put(fieldName, DiscreteRule.newSet( values));
+		return this;
+	}
+	
+	public RandomBuilder randomWithBuilder(String fieldName, RandomBuilder builder) {
+		nestedObjectBuilderMap.put(fieldName, builder);
+		return this;
+	}
+	
+	public RandomBuilder exclusiveRandomFrom(String fieldName, String... values) {
+		fieldRules.put(fieldName, DiscreteRule.newSetExclusive( values));
+		return this;
+	}
+	
+	public RandomBuilder toBeBuilt(int numberOfObjects) {
+		this.numberOfObjects = numberOfObjects;
 		return this;
 	}
 	
@@ -68,23 +95,42 @@ public class RandomBuilder {
 	private User buildRandom() {
 		User user = new User();
 		
+		// TODO handle null pointers
 		String randomUsername = (String) fieldRules.get("username").getRandomAllowedValue();
 		Long randomBirthDate = (Long) fieldRules.get("birthDate").getRandomAllowedValue();
+		String randomFirstName = (String) fieldRules.get("firstname").getRandomAllowedValue();
+		String randomLastname = (String) fieldRules.get("lastname").getRandomAllowedValue();
+		Long randomNumberOfCards = (Long) fieldRules.get("numberOfCards").getRandomAllowedValue();
+		Double randomAccountBalance = (Double) fieldRules.get("accountBalance").getRandomAllowedValue();
 		
 		Instant instant = Instant.ofEpochMilli(randomBirthDate).atZone(ZoneId.systemDefault()).toInstant();
 		
+//		Address address = nestedObjectBuilderMap.get("address").build();
+		
 		user.setUsername(randomUsername);
 		user.setBirthDate(Date.from(instant));
+		user.setFirstname(randomFirstName);
+		user.setLastname(randomLastname);
+		user.setNumberOfCards(randomNumberOfCards);
+		user.setAccountBalance(randomAccountBalance);
 		
 		return user;
 	}
 
 	public List<User> buildAll() {
-		return this.build(numberOfUsers);
+		return this.build(numberOfObjects);
 	}
 
 	public Map<String,Rule<? extends Comparable<?>>> getFieldRules() {
 		return fieldRules;
+	}
+
+	public Map<String, RandomBuilder> getNestedObjectBuilderMap() {
+		return nestedObjectBuilderMap;
+	}
+
+	public void setNestedObjectBuilderMap(Map<String, RandomBuilder> nestedObjectBuilderMap) {
+		this.nestedObjectBuilderMap = nestedObjectBuilderMap;
 	}
 	
 }

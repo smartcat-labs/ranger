@@ -153,8 +153,12 @@ public class UserTest {
 		LocalDateTime yougnestBirthDate = LocalDateTime.of(2000, 1, 1,0,0);
 		
 		randomUserBuilder
-				.randomUsernameFrom("destroyerOfW0rldz", "univerzalBlack", "johnycage", "subzero", "krelac", "pevac")
-				.randomBirthDateBetween(oldestBirthDate, yougnestBirthDate)
+				.randomFrom("username","destroyerOfW0rldz", "univerzalBlack", "johnycage", "subzero", "krelac", "pevac")
+				.randomFrom("firstname", "john", "alice", "bob", "charlie", "david", "elon")
+				.randomFrom("lastname", "annison", "berkley", "chaplin", "dickinson")
+				.randomFromRange("numberOfCards", 0L, 14L)
+				.randomFromRange("accountBalance", 2.72, 3.14)
+				.randomFromRange("birthDate", oldestBirthDate, yougnestBirthDate)
 				.toBeBuilt(5);
 		
 		RandomBuilder exclusiveUserBuilder = new RandomBuilder();
@@ -163,8 +167,12 @@ public class UserTest {
 		LocalDateTime yougnestBirthDateX = LocalDateTime.of(1985, 1, 2,0,0);
 		
 		exclusiveUserBuilder
-			.randomUsernameFromX("destroyerOfW0rldz", "univerzalBlack", "johnycage", "subzero")
-			.randomBirthDateBetweenX(oldestBirthDateX, yougnestBirthDateX)
+			.exclusiveRandomFrom("username", "destroyerOfW0rldz", "univerzalBlack", "johnycage", "subzero")
+			.randomFrom("firstname", "john", "alice", "bob", "charlie", "david", "elon")
+			.randomFrom("lastname", "annison", "berkley", "chaplin", "dickinson")
+			.randomFromRange("numberOfCards", 0L, 14L)
+			.randomFromRange("accountBalance", 2.72, 3.14)
+			.exclusiveRandomFromRange("birthDate", oldestBirthDateX, yougnestBirthDateX)
 			.toBeBuilt(3);
 		
 		BuildRunner runner = new BuildRunner();

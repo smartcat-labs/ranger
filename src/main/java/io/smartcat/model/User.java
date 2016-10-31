@@ -16,7 +16,7 @@ public class User {
 	private String lastname;
 	private Date birthDate;
 	
-	private long numberOfCards;
+	private Long numberOfCards;
 	
 	private Double accountBalance;
 	
@@ -24,15 +24,14 @@ public class User {
 	
 	private Address address;
 	
+	// getters and setters
+	
 	@Override
 	public String toString() {
 		return "User [username=" + username + ", firstname=" + firstname + ", lastname=" + lastname + ", birthDate="
-				+ birthDate + ", numberOfCards=" + numberOfCards + ", favoriteMovies=" + favoriteMovies + ", address="
-				+ address + "]";
+				+ birthDate + ", numberOfCards=" + numberOfCards + ", accountBalance=" + accountBalance
+				+ ", favoriteMovies=" + favoriteMovies + ", address=" + address + "]";
 	}
-	
-	// getters and setters
-	
 	public String getUsername() {
 		return username;
 	}
@@ -86,6 +85,9 @@ public class User {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-	
 
+	public void setNumberOfCards(Long numberOfCards) {
+		this.numberOfCards = numberOfCards;
+	}
+	
 }
