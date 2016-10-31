@@ -6,39 +6,34 @@ import java.util.concurrent.ThreadLocalRandom;
 import com.google.common.collect.Lists;
 
 public class DiscreteRule implements Rule<String> {
-	// TODO replace String argument in generic parameter with something more generic, e.g. <T extends Comparable>
 	
 	private boolean exclusive;
-	private String fieldName;
 	
 	private final List<String> allowedValues = Lists.newArrayList();
 	
 	private DiscreteRule() {};
 	
-	public static DiscreteRule newSet(String fieldName, String... allowedUsernames) {
+	public static DiscreteRule newSet(String... allowedValues) {
 		DiscreteRule result = new DiscreteRule();
 		
-		result.fieldName = fieldName;
-		result.allowedValues.addAll(Lists.newArrayList(allowedUsernames));
+		result.allowedValues.addAll(Lists.newArrayList(allowedValues));
 		
 		return result;
 	}
 	
-	public static DiscreteRule newSet(String fieldName, List<String> allowedUsernames) {
+	public static DiscreteRule newSet(List<String> allowedValues) {
 		DiscreteRule result = new DiscreteRule();
 		
-		result.fieldName = fieldName;
-		result.allowedValues.addAll(Lists.newArrayList(allowedUsernames));
+		result.allowedValues.addAll(Lists.newArrayList(allowedValues));
 		
 		return result;
 	}
 	
-	public static DiscreteRule newSetExclusive(String fieldName, String... allowedUsernames) {
+	public static  DiscreteRule newSetExclusive(String... allowedValues) {
 		DiscreteRule result = new DiscreteRule();
 		
 		result.exclusive = true;
-		result.fieldName = fieldName;
-		result.allowedValues.addAll(Lists.newArrayList(allowedUsernames));
+		result.allowedValues.addAll(Lists.newArrayList(allowedValues));
 		
 		return result;
 	}
@@ -53,7 +48,7 @@ public class DiscreteRule implements Rule<String> {
 	}
 
 	@Override
-	public Rule<String> recalculatePrecedance(Rule exclusiveRule) {
+	public Rule<String> recalculatePrecedance(Rule<String> exclusiveRule) {
 		if (!exclusiveRule.isExclusive()) {
 			throw new IllegalArgumentException("no need to calculate rule precedance with non exclusive rule");
 		}
@@ -64,7 +59,7 @@ public class DiscreteRule implements Rule<String> {
 		
 		allowedValues.removeAll(otherRule.getAllowedValues());
 		
-		return DiscreteRule.newSet(fieldName, allowedValues);
+		return DiscreteRule.newSet(allowedValues);
 	}
 
 	@Override

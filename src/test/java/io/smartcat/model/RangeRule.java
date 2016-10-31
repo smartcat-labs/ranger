@@ -3,47 +3,38 @@ package io.smartcat.model;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.IntStream;
 
 import org.assertj.core.util.Lists;
 
 public final class RangeRule implements Rule<Long> {
-	// TODO Replace Long argument with generic parameter <T extends Comparable> on order to allow other numeric types
 	
 	private boolean exclusive;
-	private String fieldName;
 	
 	// definition of the range: e.g [a,b,c,d] : a < b <= c < d is a set of ranges: {[a,b),[c,d)}
-	// or [a,b,c] : a<b<c is a set of ranges: {[a,b), [c, infinity)} ? should this be currently allowed?
 	private List<Long> ranges = Lists.newArrayList();
-	
-	private Random random = new Random();
 	
 	private RangeRule() {};
 	
-	public static RangeRule withRanges(String fieldName, Long... rangeMarkers) {
+	public static RangeRule withRanges(Long... rangeMarkers) {
 		RangeRule result = new RangeRule();
 		
-		result.fieldName = fieldName;
 		result.ranges.addAll(Lists.newArrayList(rangeMarkers));
 		
 		return result;
 	}
 	
-	public static RangeRule withRangesX(String fieldName, Long... rangeMarkers) {
+	public static RangeRule withRangesX(Long... rangeMarkers) {
 		RangeRule result = new RangeRule();
 		
-		result.fieldName = fieldName;
 		result.exclusive = true;
 		result.ranges.addAll(Lists.newArrayList(rangeMarkers));
 		
 		return result;
 	}
 	
-	public static RangeRule withRanges(String fieldName, List<Long> rangeMarkers) {
+	public static RangeRule withRanges(List<Long> rangeMarkers) {
 		RangeRule result = new RangeRule();
 		
-		result.fieldName = fieldName;
 		result.ranges.addAll(Lists.newArrayList(rangeMarkers));
 		
 		return result;
@@ -59,7 +50,7 @@ public final class RangeRule implements Rule<Long> {
 	}
 	
 	@Override
-	public Rule<Long> recalculatePrecedance(Rule exclusiveRule) {
+	public Rule<Long> recalculatePrecedance(Rule<Long> exclusiveRule) {
 		if (!exclusiveRule.isExclusive()) {
 			throw new IllegalArgumentException("no need to calculate rule precedance with non exclusive rule");
 		}
@@ -73,7 +64,7 @@ public final class RangeRule implements Rule<Long> {
 		}
 		List<Long> newRanges = recalculateRanges(otherRule.getAllowedRanges());
 		
-		return RangeRule.withRanges(fieldName, newRanges);
+		return RangeRule.withRanges(newRanges);
 	}
 	
 	private boolean rangesIntersects(List<Long> range1, List<Long> range2) {
@@ -136,6 +127,8 @@ public final class RangeRule implements Rule<Long> {
 		// randomRangeIndex == 2 => index1 = 4, index2 = 5;
 		// randomRangeIndex == 3 => index1 = 6, index2 = 7;
 		Long randomBirthDate = ThreadLocalRandom.current().nextLong(ranges.get(randomRangeIndex * 2), ranges.get((randomRangeIndex * 2)+1));
+		// if we used generic type <T> instead of Long there would be no way to get random of type T because we do not know what is the type T
+		
 		return randomBirthDate;
 	}
 	
