@@ -16,7 +16,9 @@ public class User {
 	private String lastname;
 	private Date birthDate;
 	
-	private long numberOfCards;
+	private Long numberOfCards;
+	
+	private Double accountBalance;
 	
 	private final List<String> favoriteMovies = Lists.newArrayList();
 	
@@ -24,9 +26,23 @@ public class User {
 	
 	// getters and setters
 	
+	@Override
+	public String toString() {
+		return "User [username=" + username + ", firstname=" + firstname + ", lastname=" + lastname + ", birthDate="
+				+ birthDate + ", numberOfCards=" + numberOfCards + ", accountBalance=" + accountBalance
+				+ ", favoriteMovies=" + favoriteMovies + ", address=" + address + "]";
+	}
 	public String getUsername() {
 		return username;
 	}
+	public Double getAccountBalance() {
+		return accountBalance;
+	}
+
+	public void setAccountBalance(Double accountBalance) {
+		this.accountBalance = accountBalance;
+	}
+
 	public void setUsername(String username) {
 		this.username = username;
 	}
@@ -69,6 +85,9 @@ public class User {
 	public void setAddress(Address address) {
 		this.address = address;
 	}
-	
 
+	public void setNumberOfCards(Long numberOfCards) {
+		this.numberOfCards = numberOfCards;
+	}
+	
 }
