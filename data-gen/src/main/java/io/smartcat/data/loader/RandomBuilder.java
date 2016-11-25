@@ -11,6 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.smartcat.data.loader.util.Randomizer;
+import io.smartcat.data.loader.util.RandomizerImpl;
+
 /**
  * Class used for building random objects of certain type.
  *
@@ -26,15 +29,22 @@ public class RandomBuilder<T> {
 
     private Map<String, RandomBuilder<?>> nestedObjectBuilderMap = new HashMap<>();
 
+    private Randomizer random = new RandomizerImpl();
+
     public RandomBuilder(Class<T> objectType) {
         this.objectType = objectType;
+    }
+
+    public RandomBuilder(Class<T> objectType, Randomizer random) {
+        this.objectType = objectType;
+        this.random = random;
     }
 
     public RandomBuilder<T> randomFromRange(String fieldName, LocalDateTime startDate, LocalDateTime endDate) {
         Instant lower = startDate.toInstant(ZoneOffset.UTC);
         Instant upper = endDate.toInstant(ZoneOffset.UTC);
 
-        fieldRules.put(fieldName, RangeRuleDate.withRanges(Date.from(lower), Date.from(upper)));
+        fieldRules.put(fieldName, RangeRuleDate.withRanges(Date.from(lower), Date.from(upper)).withRandom(random));
 
         return this;
     }
@@ -43,33 +53,33 @@ public class RandomBuilder<T> {
         Instant lower = startDate.toInstant(ZoneOffset.UTC);
         Instant upper = endDate.toInstant(ZoneOffset.UTC);
 
-        fieldRules.put(fieldName, RangeRuleDate.withRangesX(Date.from(lower), Date.from(upper)));
+        fieldRules.put(fieldName, RangeRuleDate.withRangesX(Date.from(lower), Date.from(upper)).withRandom(random));
 
         return this;
     }
 
     public RandomBuilder<T> randomFromRange(String fieldName, Long lower, Long upper) {
-        fieldRules.put(fieldName, RangeRule.withRanges(lower, upper));
+        fieldRules.put(fieldName, RangeRule.withRanges(lower, upper).withRandom(random));
         return this;
     }
 
     public RandomBuilder<T> exclusiveRandomFromRange(String fieldName, Long lower, Long upper) {
-        fieldRules.put(fieldName, RangeRule.withRangesX(lower, upper));
+        fieldRules.put(fieldName, RangeRule.withRangesX(lower, upper).withRandom(random));
         return this;
     }
 
     public RandomBuilder<T> randomFromRange(String fieldName, Double lower, Double upper) {
-        fieldRules.put(fieldName, RangeRuleDouble.withRanges(lower, upper));
+        fieldRules.put(fieldName, RangeRuleDouble.withRanges(lower, upper).withRandom(random));
         return this;
     }
 
     public RandomBuilder<T> exclusiveRandomFromRange(String fieldName, Double lower, Double upper) {
-        fieldRules.put(fieldName, RangeRuleDouble.withRangesX(lower, upper));
+        fieldRules.put(fieldName, RangeRuleDouble.withRangesX(lower, upper).withRandom(random));
         return this;
     }
 
     public RandomBuilder<T> randomFrom(String fieldName, String... values) {
-        fieldRules.put(fieldName, DiscreteRule.newSet(values));
+        fieldRules.put(fieldName, DiscreteRule.newSet(values).withRandom(random));
         return this;
     }
 
@@ -79,17 +89,17 @@ public class RandomBuilder<T> {
     }
 
     public RandomBuilder<T> exclusiveRandomFrom(String fieldName, String... values) {
-        fieldRules.put(fieldName, DiscreteRule.newSetExclusive(values));
+        fieldRules.put(fieldName, DiscreteRule.newSetExclusive(values).withRandom(random));
         return this;
     }
 
     public RandomBuilder<T> randomSubsetFrom(String fieldName, String... values) {
-        fieldRules.put(fieldName, SubSetRule.withValues(Arrays.asList(values)));
+        fieldRules.put(fieldName, SubSetRule.withValues(Arrays.asList(values)).withRandom(random));
         return this;
     }
 
     public RandomBuilder<T> randomSubListFrom(String fieldName, String... values) {
-        fieldRules.put(fieldName, SubListRule.withValues(Arrays.asList(values)));
+        fieldRules.put(fieldName, SubListRule.withValues(Arrays.asList(values)).withRandom(random));
         return this;
     }
 
