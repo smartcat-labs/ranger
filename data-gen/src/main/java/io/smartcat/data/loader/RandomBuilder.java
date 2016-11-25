@@ -11,6 +11,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.smartcat.data.loader.rules.DiscreteRule;
+import io.smartcat.data.loader.rules.RangeRuleDate;
+import io.smartcat.data.loader.rules.RangeRuleDouble;
+import io.smartcat.data.loader.rules.RangeRuleLong;
+import io.smartcat.data.loader.rules.Rule;
+import io.smartcat.data.loader.rules.SubListRule;
+import io.smartcat.data.loader.rules.SubSetRule;
 import io.smartcat.data.loader.util.Randomizer;
 import io.smartcat.data.loader.util.RandomizerImpl;
 
@@ -59,12 +66,12 @@ public class RandomBuilder<T> {
     }
 
     public RandomBuilder<T> randomFromRange(String fieldName, Long lower, Long upper) {
-        fieldRules.put(fieldName, RangeRule.withRanges(lower, upper).withRandom(random));
+        fieldRules.put(fieldName, RangeRuleLong.withRanges(lower, upper).withRandom(random));
         return this;
     }
 
     public RandomBuilder<T> exclusiveRandomFromRange(String fieldName, Long lower, Long upper) {
-        fieldRules.put(fieldName, RangeRule.withRangesX(lower, upper).withRandom(random));
+        fieldRules.put(fieldName, RangeRuleLong.withRangesX(lower, upper).withRandom(random));
         return this;
     }
 
