@@ -47,6 +47,8 @@
         <version.plugin.checkstyle>2.17</version.plugin.checkstyle>
         <version.plugin.install>2.5.2</version.plugin.install>
         <version.plugin.deploy>2.8.2</version.plugin.deploy>
+        <version.plugin.javadoc>2.10.3</version.plugin.javadoc>
+        <version.plugin.source>3.0.0</version.plugin.source>
         <version.plugin.shade>2.4.3</version.plugin.shade>
         <version.plugin.jar>2.6</version.plugin.jar>
         <version.plugin.resources>2.7</version.plugin.resources>
@@ -113,8 +115,7 @@
 
     <distributionManagement>
         <repository>
-            <id>bintray-smartcat-labs-maven</id>
-            <name>smartcat-labs-maven</name>
+            <id>bintray</id>
             <url>https://api.bintray.com/maven/smartcat-labs/maven/data-loader/;publish=1</url>
         </repository>
     </distributionManagement>
@@ -146,6 +147,41 @@
                                     <propertiesLocation>checkstyle.properties</propertiesLocation>
                                     <excludes>**/generated/**/*</excludes>
                                 </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <profile>
+            <id>extras</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>${version.plugin.source}</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>${version.plugin.javadoc}</version>
+                        <executions>
+                            <execution>
+                                <id>attach-javadoc</id>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
                             </execution>
                         </executions>
                     </plugin>
