@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>io.smartcat</groupId>
-    <artifactId>data-loader</artifactId>
+    <artifactId>ranger</artifactId>
     <version>0.0.2-SNAPSHOT</version>
     <packaging>pom</packaging>
 
-    <name>Data loader</name>
-    <description>Data loader for contextual load generator</description>
+    <name>Ranger</name>
+    <description>Contextual data and load generator</description>
 
     <modules>
         <module>data-gen</module>
@@ -27,13 +27,13 @@
 
     <issueManagement>
         <system>github.com</system>
-        <url>https://github.com/smartcat-labs/data-loader/issues</url>
+        <url>https://github.com/smartcat-labs/ranger/issues</url>
     </issueManagement>
 
     <scm>
-        <url>https://github.com/smartcat-labs/data-loader</url>
-        <connection>scm:git:git@github.com:smartcat-labs/data-loader.git</connection>
-        <developerConnection>scm:git:git@github.com:smartcat-labs/data-loader.git</developerConnection>
+        <url>https://github.com/smartcat-labs/ranger</url>
+        <connection>scm:git:git@github.com:smartcat-labs/ranger.git</connection>
+        <developerConnection>scm:git:git@github.com:smartcat-labs/ranger.git</developerConnection>
         <tag>HEAD</tag>
     </scm>
 
@@ -116,7 +116,7 @@
     <distributionManagement>
         <repository>
             <id>bintray</id>
-            <url>https://api.bintray.com/maven/smartcat-labs/maven/data-loader/;publish=1</url>
+            <url>https://api.bintray.com/maven/smartcat-labs/maven/ranger/;publish=1</url>
         </repository>
     </distributionManagement>
 
