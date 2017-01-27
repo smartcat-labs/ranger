@@ -1,7 +1,6 @@
 package io.smartcat.data.loader;
 
 import java.lang.reflect.Field;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
@@ -13,8 +12,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import io.smartcat.data.loader.rules.DiscreteRule;
 import io.smartcat.data.loader.rules.DiscreteRuleBoolean;
+import io.smartcat.data.loader.rules.DiscreteRuleString;
 import io.smartcat.data.loader.rules.RangeRuleDate;
 import io.smartcat.data.loader.rules.RangeRuleDouble;
 import io.smartcat.data.loader.rules.RangeRuleFloat;
@@ -171,32 +170,6 @@ public class RandomBuilder<T> {
     }
 
     /**
-     * Sets the exclusive allowed ranges of dates for the field with {@code fieldName}. That means that only this
-     * instance of the builder is allowed to set property with passed name {@code fieldName} from these ranges.
-     *
-     * Note that the corner cases will always be generated first in order to ensure protection against off-by-one
-     * errors. For example, if startDate is 2000-01-01 and endDate is 2000-01-04 the generator will first create two
-     * corner cases, that is: 2000-01-01 00:00:00:000 and 2000-01-03 23:59:59:999. The end of the range is calculated
-     * with millisecond granularity.
-     *
-     * @param fieldName name of the field in the type <T>
-     * @param startDate start of the range (inclusive)
-     * @param endDate end of the range (exclusive)
-     * @return RandomBuilder<T>
-     *
-     * @throws IllegalArgumentException if {@code startDate} is greater than <i>or equal to</i> {@code endDate}
-     */
-    public RandomBuilder<T> exclusiveRandomFromRange(String fieldName, LocalDateTime startDate, LocalDateTime endDate) {
-        checkRangeInput(startDate, endDate);
-        Instant lower = startDate.toInstant(ZoneOffset.UTC);
-        Instant upper = endDate.toInstant(ZoneOffset.UTC);
-
-        fieldRules.put(fieldName, RangeRuleDate.withRangesX(Date.from(lower), Date.from(upper)).withRandom(random));
-
-        return this;
-    }
-
-    /**
      * Sets the allowed ranges of Longs for the field with {@code fieldName}. The ranges are defined by an array of
      * Longs L1,L2, ... ,Ln such that L1 < L2 < ... < Ln and (n % 2) = 0;
      *
@@ -212,23 +185,6 @@ public class RandomBuilder<T> {
     public RandomBuilder<T> randomFromRange(String fieldName, Long... rangeMarkers) {
         checkRangeInput(rangeMarkers);
         fieldRules.put(fieldName, RangeRuleLong.withRanges(rangeMarkers).withRandom(random));
-        return this;
-    }
-
-    /**
-     * Sets the exclusive allowed ranges of Longs for the field with {@code fieldName}. That means that only this
-     * instance of the builder is allowed to set property with passed name {@code fieldName} from these ranges.
-     *
-     * @param fieldName name of the field in the type <T>
-     * @param lower start of the range (inclusive)
-     * @param upper end of the range (exclusive)
-     * @return RandomBuilder<T>
-     *
-     * @throws IllegalArgumentException if {@code lower} is greater than <i>or equal to</i> {@code upper}
-     */
-    public RandomBuilder<T> exclusiveRandomFromRange(String fieldName, Long lower, Long upper) {
-        checkRangeInput(lower, upper);
-        fieldRules.put(fieldName, RangeRuleLong.withRangesX(lower, upper).withRandom(random));
         return this;
     }
 
@@ -252,23 +208,6 @@ public class RandomBuilder<T> {
     }
 
     /**
-     * Sets the exclusive allowed ranges of Doubles for the field with {@code fieldName}. That means that only this
-     * instance of the builder is allowed to set property with passed name {@code fieldName} from these ranges.
-     *
-     * @param fieldName name of the field in the type <T>
-     * @param lower start of the range (inclusive)
-     * @param upper end of the range (exclusive)
-     * @return RandomBuilder<T>
-     *
-     * @throws IllegalArgumentException if {@code lower} is greater than <i>or equal to</i> {@code upper}
-     */
-    public RandomBuilder<T> exclusiveRandomFromRange(String fieldName, Double lower, Double upper) {
-        checkRangeInput(lower, upper);
-        fieldRules.put(fieldName, RangeRuleDouble.withRangesX(lower, upper).withRandom(random));
-        return this;
-    }
-
-    /**
      * Sets the allowed list of String values for the field with {@code fieldName}.
      *
      * @param fieldName name of the field in the type <T>
@@ -276,7 +215,7 @@ public class RandomBuilder<T> {
      * @return RandomBuilder<T>
      */
     public RandomBuilder<T> randomFrom(String fieldName, String... values) {
-        fieldRules.put(fieldName, DiscreteRule.newSet(values).withRandom(random));
+        fieldRules.put(fieldName, DiscreteRuleString.newSet(values).withRandom(random));
         return this;
     }
 
@@ -304,19 +243,6 @@ public class RandomBuilder<T> {
     }
 
     /**
-     * Sets the exclusive allowed list of String values for the field with {@code fieldName}. That means that only this
-     * instance of the builder is allowed to set property with passed name {@code fieldName} with these values.
-     *
-     * @param fieldName name of the field in the type <T>
-     * @param values list of allowed values
-     * @return RandomBuilder<T>
-     */
-    public RandomBuilder<T> exclusiveRandomFrom(String fieldName, String... values) {
-        fieldRules.put(fieldName, DiscreteRule.newSetExclusive(values).withRandom(random));
-        return this;
-    }
-
-    /**
      * Sets the allowed list of String values for the field with {@code fieldName} from which a random sub set should be
      * chosen (including empty set).
      *
@@ -330,19 +256,6 @@ public class RandomBuilder<T> {
     }
 
     /**
-     * Sets the exclusive allowed list of String values for the field with {@code fieldName} from which a random sub set
-     * should be chosen (including empty set).
-     *
-     * @param fieldName name of the field in the type <T>
-     * @param values allowed values
-     * @return RandomBuilder<T>
-     */
-    public RandomBuilder<T> exclusiveRandomSubsetFrom(String fieldName, String... values) {
-        fieldRules.put(fieldName, SubSetRule.withValuesX(Arrays.asList(values)).withRandom(random));
-        return this;
-    }
-
-    /**
      * Sets the allowed list of String values for the field with {@code fieldName} from which a random sub list should
      * be chosen (including empty list).
      *
@@ -352,19 +265,6 @@ public class RandomBuilder<T> {
      */
     public RandomBuilder<T> randomSubListFrom(String fieldName, String... values) {
         fieldRules.put(fieldName, SubListRule.withValues(Arrays.asList(values)).withRandom(random));
-        return this;
-    }
-
-    /**
-     * Sets the exclusive allowed list of String values for the field with {@code fieldName} from which a random sub
-     * list should be chosen (including empty list).
-     *
-     * @param fieldName name of the field in the type <T>
-     * @param values allowed values
-     * @return RandomBuilder<T>
-     */
-    public RandomBuilder<T> exclusiveRandomSubListFrom(String fieldName, String... values) {
-        fieldRules.put(fieldName, SubListRule.withValuesX(Arrays.asList(values)).withRandom(random));
         return this;
     }
 
@@ -412,7 +312,7 @@ public class RandomBuilder<T> {
      * @param numberOfObjects number of entities to be built
      * @return List<T>
      */
-    public List<T> build(long numberOfObjects) {
+    private List<T> build(long numberOfObjects) {
         List<T> result = new ArrayList<>();
         for (long i = 1; i <= numberOfObjects; i++) {
             final T randomEntity = buildOne();
@@ -491,6 +391,7 @@ public class RandomBuilder<T> {
         throw new IllegalArgumentException("Unexisting field: " + fieldName);
     }
 
+    @SafeVarargs
     private static <C extends Comparable<C>> void checkRangeInput(C... markers) {
         List<C> markersList = new LinkedList<>(Arrays.asList(markers));
         if (markersList.size() % 2 != 0) {

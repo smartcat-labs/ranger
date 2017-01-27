@@ -62,7 +62,7 @@ public class SubListRuleTest {
 
         RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
         randomUserBuilder.randomFrom("username", "destroyerOfW0rldz")
-                .randomSubListWithBuilder("otherAddresses", randomAddressBuilder, 0, 2).build(1000);
+                .randomSubListWithBuilder("otherAddresses", randomAddressBuilder, 0, 2).toBeBuilt(1000);
 
         List<User> result = randomUserBuilder.buildAll();
 
@@ -134,73 +134,6 @@ public class SubListRuleTest {
         Assert.assertTrue("should be at least one with street White Wizzard Boulevard.", atLeastOneWWB);
         Assert.assertTrue("should be at least one with street Palantir's Square.", atLeastOnePS);
 
-    }
-
-    @Test
-    public void should_calculate_precedence() {
-        RandomBuilder<User> hitchcockFanUserBuilder = new RandomBuilder<User>(User.class);
-        hitchcockFanUserBuilder.randomFrom("username", "birdie")
-                .randomSubListFrom("favoriteMovies", "The Birds", "Vertigo", "Psycho").toBeBuilt(1000);
-
-        RandomBuilder<User> spielbergFanUserBuilder = new RandomBuilder<User>(User.class);
-        spielbergFanUserBuilder.randomFrom("username", "extraterrestrial")
-                .exclusiveRandomSubListFrom("favoriteMovies", "E.T.", "Jaws", "Vertigo").toBeBuilt(300);
-
-        BuildRunner<User> runner = new BuildRunner<>();
-        runner.addBuilder(hitchcockFanUserBuilder);
-        runner.addBuilder(spielbergFanUserBuilder);
-
-        List<User> result = runner.build();
-
-        Assert.assertEquals(1300, result.size());
-
-        boolean atLeastOneEmptyList = false;
-        boolean atLeastOneWithListOfSizeOne = false;
-        boolean atLeastOneWithListOfSizeTwo = false;
-        boolean atLeastOneWithListOfSizeThree = false;
-
-        for (User user : result) {
-            if (user.getUsername().equals("birdie")) {
-                Assert.assertTrue(user.getFavoriteMovies().isEmpty() || user.getFavoriteMovies().contains("The Birds")
-                        || user.getFavoriteMovies().contains("Psycho"));
-                Assert.assertTrue(!user.getFavoriteMovies().contains("Vertigo"));
-                if (user.getFavoriteMovies().isEmpty()) {
-                    atLeastOneEmptyList = true;
-                } else if (user.getFavoriteMovies().size() == 1) {
-                    atLeastOneWithListOfSizeOne = true;
-                } else {
-                    Assert.assertTrue(user.getFavoriteMovies().size() == 2);
-                    atLeastOneWithListOfSizeTwo = true;
-                }
-            } else {
-                Assert.assertEquals("extraterrestrial", user.getUsername());
-                Assert.assertTrue(user.getFavoriteMovies().isEmpty() || user.getFavoriteMovies().contains("E.T.")
-                        || user.getFavoriteMovies().contains("Jaws") || user.getFavoriteMovies().contains("Vertigo"));
-                if (user.getFavoriteMovies().isEmpty()) {
-                    atLeastOneEmptyList = true;
-                } else if (user.getFavoriteMovies().size() == 1) {
-                    atLeastOneWithListOfSizeOne = true;
-                } else if (user.getFavoriteMovies().size() == 2) {
-                    atLeastOneWithListOfSizeTwo = true;
-                } else {
-                    Assert.assertTrue(user.getFavoriteMovies().size() == 3);
-                    atLeastOneWithListOfSizeThree = true;
-                }
-            }
-        }
-
-        Assert.assertTrue(
-                "There is a very high probability that there should be at least one user with no favorite movies",
-                atLeastOneEmptyList);
-        Assert.assertTrue(
-                "There is a very high probability that there should be at least one user with one favorite movie",
-                atLeastOneWithListOfSizeOne);
-        Assert.assertTrue(
-                "There is a very high probability that there should be at least one user with two favorite movies",
-                atLeastOneWithListOfSizeTwo);
-        Assert.assertTrue(
-                "There is a very high probability that there should be at least one user with three favorite movies",
-                atLeastOneWithListOfSizeThree);
     }
 
 }
