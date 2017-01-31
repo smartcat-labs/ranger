@@ -7,9 +7,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import io.smartcat.data.loader.rules.DiscreteRuleBoolean;
@@ -80,7 +82,7 @@ public class RandomBuilder<T> {
      */
     public RandomBuilder<T> randomFromRange(String fieldName, Short... rangeMarkers) {
         checkRangeInput(rangeMarkers);
-        fieldRules.put(fieldName, RangeRuleShort.withRanges(rangeMarkers).withRandom(random));
+        fieldRules.put(fieldName, new RangeRuleShort.Builder(random).ranges(rangeMarkers).build());
         return this;
     }
 
@@ -100,7 +102,7 @@ public class RandomBuilder<T> {
      */
     public RandomBuilder<T> randomFromRange(String fieldName, Integer... rangeMarkers) {
         checkRangeInput(rangeMarkers);
-        fieldRules.put(fieldName, RangeRuleInt.withRanges(rangeMarkers).withRandom(random));
+        fieldRules.put(fieldName, new RangeRuleInt.Builder(random).ranges(rangeMarkers).build());
         return this;
     }
 
@@ -120,7 +122,7 @@ public class RandomBuilder<T> {
      */
     public RandomBuilder<T> randomFromRange(String fieldName, Float... rangeMarkers) {
         checkRangeInput(rangeMarkers);
-        fieldRules.put(fieldName, RangeRuleFloat.withRanges(rangeMarkers).withRandom(random));
+        fieldRules.put(fieldName, new RangeRuleFloat.Builder(random).ranges(rangeMarkers).build());
         return this;
     }
 
@@ -143,7 +145,8 @@ public class RandomBuilder<T> {
 
         List<Date> result = Arrays.asList(rangeMarkers).stream().map(marker -> marker.toInstant(ZoneOffset.UTC))
                 .map(instant -> Date.from(instant)).collect(Collectors.toList());
-        fieldRules.put(fieldName, RangeRuleDate.withRanges(result).withRandom(random));
+
+        fieldRules.put(fieldName, new RangeRuleDate.Builder(random).ranges(result).build());
 
         return this;
     }
@@ -164,7 +167,7 @@ public class RandomBuilder<T> {
      */
     public RandomBuilder<T> randomFromRange(String fieldName, Date... rangeMarkers) {
         checkRangeInput(rangeMarkers);
-        fieldRules.put(fieldName, RangeRuleDate.withRanges(rangeMarkers).withRandom(random));
+        fieldRules.put(fieldName, new RangeRuleDate.Builder(random).ranges(rangeMarkers).build());
 
         return this;
     }
@@ -184,7 +187,7 @@ public class RandomBuilder<T> {
      */
     public RandomBuilder<T> randomFromRange(String fieldName, Long... rangeMarkers) {
         checkRangeInput(rangeMarkers);
-        fieldRules.put(fieldName, RangeRuleLong.withRanges(rangeMarkers).withRandom(random));
+        fieldRules.put(fieldName, new RangeRuleLong.Builder(random).ranges(rangeMarkers).build());
         return this;
     }
 
@@ -203,7 +206,8 @@ public class RandomBuilder<T> {
      */
     public RandomBuilder<T> randomFromRange(String fieldName, Double... rangeMarkers) {
         checkRangeInput(rangeMarkers);
-        fieldRules.put(fieldName, RangeRuleDouble.withRanges(rangeMarkers).withRandom(random));
+        fieldRules.put(fieldName, new RangeRuleDouble.Builder(random).ranges(rangeMarkers).build());
+
         return this;
     }
 
@@ -215,7 +219,7 @@ public class RandomBuilder<T> {
      * @return RandomBuilder<T>
      */
     public RandomBuilder<T> randomFrom(String fieldName, String... values) {
-        fieldRules.put(fieldName, DiscreteRuleString.newSet(values).withRandom(random));
+        fieldRules.put(fieldName, new DiscreteRuleString.Builder(random).allowedValues(values).build());
         return this;
     }
 
@@ -226,7 +230,7 @@ public class RandomBuilder<T> {
      * @return RandomBuilder<T>
      */
     public RandomBuilder<T> randomBoolean(String fieldName) {
-        fieldRules.put(fieldName, DiscreteRuleBoolean.withRandom(random));
+        fieldRules.put(fieldName, new DiscreteRuleBoolean.Builder(random).build());
         return this;
     }
 
@@ -251,7 +255,9 @@ public class RandomBuilder<T> {
      * @return RandomBuilder<T>
      */
     public RandomBuilder<T> randomSubsetFrom(String fieldName, String... values) {
-        fieldRules.put(fieldName, SubSetRule.withValues(Arrays.asList(values)).withRandom(random));
+        List<String> list = new ArrayList<>(Arrays.asList(values));
+        Set<String> set = new HashSet<>(list);
+        fieldRules.put(fieldName, new SubSetRule.Builder<String>(random).withValues(set).build());
         return this;
     }
 
@@ -264,7 +270,7 @@ public class RandomBuilder<T> {
      * @return RandomBuilder<T>
      */
     public RandomBuilder<T> randomSubListFrom(String fieldName, String... values) {
-        fieldRules.put(fieldName, SubListRule.withValues(Arrays.asList(values)).withRandom(random));
+        fieldRules.put(fieldName, new SubListRule.Builder<String>(random).withValues(Arrays.asList(values)).build());
         return this;
     }
 
