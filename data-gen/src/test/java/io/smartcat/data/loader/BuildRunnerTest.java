@@ -132,7 +132,7 @@ public class BuildRunnerTest {
         randomUserBuilder.randomFrom("unexistingField", "something").toBeBuilt(100);
 
         try {
-            List<User> users = new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+            new BuildRunner<User>().withBuilder(randomUserBuilder).build();
             Assert.fail("should fail silently when trying to set unexiting field.");
         } catch (IllegalArgumentException e) {
             Assert.assertTrue(e != null);

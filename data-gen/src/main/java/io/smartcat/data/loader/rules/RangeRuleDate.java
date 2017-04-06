@@ -23,7 +23,7 @@ public class RangeRuleDate implements Rule<Date> {
         this.random = builder.random;
         this.ranges = builder.ranges;
         this.rangeEdges = builder.rangeEdges;
-    };
+    }
 
     /**
      * Set Randomizer for the Rule.
