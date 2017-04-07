@@ -7,45 +7,72 @@ import java.util.concurrent.TimeUnit;
  */
 public class FixedRateRefillStrategy implements RefillStrategy {
 
-    private final Ticker ticker;
-    private final long numTokensPerSecond;
-    private final long periodDurationInNanos;
-    private long lastRefillTime;
-    private long nextRefillTime;
+    private static final long NANOS_IN_SECOND = TimeUnit.SECONDS.toNanos(1);
+
+    private final long tokensPerSecond;
+    private final long refillPeriodInNanos;
+
+    private long lastRefillTimeInNanos;
+    private long nextRefillTimeInNanos;
 
     /**
-     * Constructor.
+     * Creates fixed rate refill strategy with specified token rate per second
+     * and default refill period of 1 millisecond.
      *
-     * @param numTokensPerSecond The number of tokens to add to the bucket every second.
+     * @param tokensPerSecond Number of tokens to add to the bucket every second.
      */
-    public FixedRateRefillStrategy(long numTokensPerSecond) {
-        this.ticker = new Ticker();
-        this.numTokensPerSecond = numTokensPerSecond;
-        this.periodDurationInNanos = TimeUnit.SECONDS.toNanos(1);
-        this.lastRefillTime = 0;
-        this.nextRefillTime = 0;
+    public FixedRateRefillStrategy(long tokensPerSecond) {
+        this(tokensPerSecond, TimeUnit.MILLISECONDS.toNanos(1));
+    }
+
+    /**
+     * Creates fixed rate refill strategy with specified token rate per second
+     * and specified refill period.
+     *
+     * @param tokensPerSecond Number of tokens to add to the bucket every second.
+     * @param refillPeriodInNanos number of nanoseconds at which refill will be calculated.
+     */
+    public FixedRateRefillStrategy(long tokensPerSecond, long refillPeriodInNanos) {
+        this.tokensPerSecond = tokensPerSecond;
+        this.refillPeriodInNanos = refillPeriodInNanos;
+        this.lastRefillTimeInNanos = nanoTime();
+        this.nextRefillTimeInNanos = lastRefillTimeInNanos + refillPeriodInNanos;
     }
 
     @Override
     public synchronized long refill() {
-        long now = ticker.read();
-        if (now < nextRefillTime) {
+        long nowInNanos = nanoTime();
+        if (nowInNanos < nextRefillTimeInNanos) {
             return 0;
         }
+        long unused;
 
-        lastRefillTime = now;
-        nextRefillTime = lastRefillTime + periodDurationInNanos;
-        return numTokensPerSecond;
+        // refill every millisecond
+        // if more than one millisecond passed
+        // refill for the amount of milliseconds passed
+        long passedTimeInNanos = nowInNanos - lastRefillTimeInNanos;
+        long numOfObtainedTokens = getNumOfTokens(passedTimeInNanos);
+
+        // increment last refilled time just by amount of tokens obtained, rest will be used in next iteration
+        // this is to minimize deviation
+        lastRefillTimeInNanos += getSpentTimeInNanos(numOfObtainedTokens);
+        nextRefillTimeInNanos = lastRefillTimeInNanos + refillPeriodInNanos;
+        return limitNumOfTokens(numOfObtainedTokens);
     }
 
-    /**
-     * Ticker class.
-     */
-    private class Ticker {
+    private long getNumOfTokens(long passedTimeInNanos) {
+        return (passedTimeInNanos * tokensPerSecond) / NANOS_IN_SECOND;
+    }
 
-        public long read() {
-            return System.nanoTime();
-        }
+    private long getSpentTimeInNanos(long numOfTokens) {
+        return (numOfTokens * NANOS_IN_SECOND) / tokensPerSecond;
+    }
 
+    private long limitNumOfTokens(long numOfTokens) {
+        return numOfTokens > tokensPerSecond ? tokensPerSecond : numOfTokens;
+    }
+
+    private long nanoTime() {
+        return System.nanoTime();
     }
 }

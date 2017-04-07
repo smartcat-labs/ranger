@@ -57,18 +57,15 @@ public class TokenBucket {
                     "Number of tokens to consume must be less than the capacity of the bucket.");
         }
 
-        refill(refillStrategy.refill());
+        size += refillStrategy.refill();
 
-        if (tokens <= size) {
+        // have enough tokens to spend
+        if (size >= tokens) {
             size -= tokens;
             return true;
         }
 
         return false;
-    }
-
-    private synchronized void refill(long tokens) {
-        size += tokens;
     }
 
 }
