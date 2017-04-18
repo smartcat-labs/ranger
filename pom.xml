@@ -42,6 +42,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <version.slf4japi>1.7.21</version.slf4japi>
         <version.logback.classic>1.1.7</version.logback.classic>
+        <version.apache.commons.csv>1.4</version.apache.commons.csv>
         <version.junit>4.12</version.junit>
         <version.pitest>1.1.11</version.pitest>
         <source.level>1.8</source.level>
@@ -69,6 +70,11 @@
                 <groupId>ch.qos.logback</groupId>
                 <artifactId>logback-classic</artifactId>
                 <version>${version.logback.classic}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>${version.apache.commons.csv}</version>
             </dependency>
 
             <dependency>
