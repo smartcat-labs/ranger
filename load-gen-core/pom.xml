@@ -7,7 +7,7 @@
         <version>0.0.4-SNAPSHOT</version>
     </parent>
 
-    <artifactId>load-gen</artifactId>
+    <artifactId>load-gen-core</artifactId>
     <packaging>jar</packaging>
 
     <properties>

@@ -13,7 +13,7 @@
 
     <modules>
         <module>data-gen</module>
-        <module>load-gen</module>
+        <module>load-gen-core</module>
     </modules>
 
     <licenses>
