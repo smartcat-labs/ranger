@@ -1,7 +1,5 @@
 package io.smartcat.ranger.data.generator;
 
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -12,20 +10,20 @@ public class RangeRuleDoubleTest {
 
     @Test
     public void should_set_low_and_high_end_values_of_a_range() {
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
-
         Double beginingOfRange = 0.2;
         Double endOfRange = 10.1;
 
-        randomUserBuilder.randomFrom("username", "subzero")
-                .randomFromRange("accountBalance", beginingOfRange, endOfRange).toBeBuilt(3);
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class)
+                .randomFrom("username", "subzero").randomFromRange("accountBalance", beginingOfRange, endOfRange)
+                .toBeGenerated(3).build();
 
-        List<User> builtUsers = new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+        AggregatedObjectGenerator<User> aggregatedObjectGenerator = new AggregatedObjectGenerator.Builder<User>()
+                .withObjectGenerator(userGenerator).build();
 
         boolean oneExactlyAtTheBeginingOfTheRange = false;
         boolean oneExactlyAtTheEndOfTheRange = false;
 
-        for (User u : builtUsers) {
+        for (User u : aggregatedObjectGenerator) {
             if (u.getAccountBalance() == beginingOfRange) {
                 oneExactlyAtTheBeginingOfTheRange = true;
             }
@@ -39,5 +37,4 @@ public class RangeRuleDoubleTest {
         Assert.assertTrue("One user must have accountBalance with value from the end of the defined range.",
                 oneExactlyAtTheEndOfTheRange);
     }
-
 }

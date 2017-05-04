@@ -18,20 +18,22 @@ public class UserTest {
         LocalDateTime mayTheFirst = LocalDateTime.of(1975, 5, 1, 0, 0);
         LocalDateTime mayTheSecond = LocalDateTime.of(1975, 5, 2, 0, 0);
 
-        RandomBuilder<Address> randomAddressBuilder = new RandomBuilder<Address>(Address.class);
-        randomAddressBuilder.randomFrom("city", "Isengard").randomFrom("street", "White Wizzard Boulevard")
-                .randomFromRange("houseNumber", 5L, 6L);
+        ObjectGenerator<Address> addressGenerator = new ObjectGenerator.Builder<Address>(Address.class)
+                .randomFrom("city", "Isengard").randomFrom("street", "White Wizzard Boulevard")
+                .randomFromRange("houseNumber", 5L, 6L).build();
 
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
-        randomUserBuilder.randomFrom("username", "destroyerOfW0rldz").randomFrom("firstname", "alice")
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class)
+                .randomFrom("username", "destroyerOfW0rldz").randomFrom("firstname", "alice")
                 .randomFrom("lastname", "annison").randomFromRange("numberOfCards", 1L, 2L)
                 .randomFromRange("accountBalance", 2.72, 2.73).randomSubListFrom("favoriteMovies", "Predator")
                 .randomSubsetFrom("nicknames", "al").randomFromRange("birthDate", mayTheFirst, mayTheSecond)
-                .randomWithBuilder("address", randomAddressBuilder).toBeBuilt(1);
+                .randomWithGenerator("address", addressGenerator).toBeGenerated(1).build();
 
-        List<User> userList = new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+        AggregatedObjectGenerator<User> aggregatedObjectGenerator = new AggregatedObjectGenerator.Builder<User>()
+                .withObjectGenerator(userGenerator).build();
 
-        User u = userList.get(0);
+        List<User> result = aggregatedObjectGenerator.generateAll();
+        User u = result.get(0);
 
         Assert.assertEquals("destroyerOfW0rldz", u.getUsername());
         Assert.assertEquals("alice", u.getFirstname());
@@ -39,9 +41,8 @@ public class UserTest {
         Long expectedNumberOfCards = 1L;
         Assert.assertEquals(expectedNumberOfCards, u.getNumberOfCards());
         Assert.assertTrue(u.getAccountBalance() - 2.72 < 0.1);
-        Assert.assertTrue(
-                u.getFavoriteMovies().isEmpty() || (u.getFavoriteMovies().size() == 1 && u.getFavoriteMovies().get(0)
-                        .equals("Predator")));
+        Assert.assertTrue(u.getFavoriteMovies().isEmpty()
+                || (u.getFavoriteMovies().size() == 1 && u.getFavoriteMovies().get(0).equals("Predator")));
         Assert.assertTrue(
                 u.getNicknames().isEmpty() || (u.getNicknames().size() == 1 && u.getNicknames().contains("al")));
         Assert.assertTrue("birthdate should be equals or after the May 1, 1975",
@@ -51,7 +52,5 @@ public class UserTest {
         Assert.assertEquals(u.getAddress().getCity(), "Isengard");
         Assert.assertEquals(u.getAddress().getHouseNumber(), 5L);
         Assert.assertEquals(u.getAddress().getStreet(), "White Wizzard Boulevard");
-
     }
-
 }

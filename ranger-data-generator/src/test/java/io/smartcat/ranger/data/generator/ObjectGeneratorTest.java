@@ -11,14 +11,13 @@ import org.junit.Test;
 import io.smartcat.ranger.data.generator.model.User;
 import io.smartcat.ranger.data.generator.rules.RangeRuleDouble;
 
-public class RandomBuilderTest {
+public class ObjectGeneratorTest {
 
     @Test
     public void should_throw_illegal_argument_exception_when_dates_are_equal() {
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
         try {
-            randomUserBuilder.randomFromRange("dateField", LocalDateTime.of(2000, 1, 1, 0, 0),
-                    LocalDateTime.of(2000, 1, 1, 0, 0));
+            new ObjectGenerator.Builder<User>(User.class).randomFromRange("dateField",
+                    LocalDateTime.of(2000, 1, 1, 0, 0), LocalDateTime.of(2000, 1, 1, 0, 0));
             Assert.fail("should throw illegal argument exception because upper bound is equal to lower.");
         } catch (IllegalArgumentException e) {
             Assert.assertTrue(e != null);
@@ -29,10 +28,9 @@ public class RandomBuilderTest {
 
     @Test
     public void should_throw_illegal_argument_exception_when_lower_bound_date_is_greater_than_upper_bound_date() {
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
         try {
-            randomUserBuilder.randomFromRange("dateField", LocalDateTime.of(2000, 1, 1, 0, 1),
-                    LocalDateTime.of(2000, 1, 1, 0, 0));
+            new ObjectGenerator.Builder<User>(User.class).randomFromRange("dateField",
+                    LocalDateTime.of(2000, 1, 1, 0, 1), LocalDateTime.of(2000, 1, 1, 0, 0));
             Assert.fail("should throw illegal argument exception because lower bound is greater than upper.");
         } catch (IllegalArgumentException e) {
             Assert.assertTrue(e != null);
@@ -43,9 +41,8 @@ public class RandomBuilderTest {
 
     @Test
     public void should_throw_illegal_argument_exception_when_doubles_are_equal() {
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
         try {
-            randomUserBuilder.randomFromRange("double", 2.0, 2.0);
+            new ObjectGenerator.Builder<User>(User.class).randomFromRange("double", 2.0, 2.0);
             Assert.fail("should throw illegal argument exception because upper bound is equal to lower.");
         } catch (IllegalArgumentException e) {
             Assert.assertTrue(e != null);
@@ -56,9 +53,8 @@ public class RandomBuilderTest {
 
     @Test
     public void should_throw_illegal_argument_exception_when_lower_bound_double_is_greater_than_upper_bound_doublel() {
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
         try {
-            randomUserBuilder.randomFromRange("double", 2.01, 2.0);
+            new ObjectGenerator.Builder<User>(User.class).randomFromRange("double", 2.01, 2.0);
             Assert.fail("should throw illegal argument exception because lower bound is greater than upper.");
         } catch (IllegalArgumentException e) {
             Assert.assertTrue(e != null);
@@ -69,39 +65,36 @@ public class RandomBuilderTest {
 
     @Test
     public void should_throw_exception_when_range_elements_are_not_increasing() {
-
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
-
         short lower1 = 0;
         short upper1 = 5;
         short lower2 = 10;
         short upper2 = 15;
         short lower3 = upper2;
         short upper3 = 20;
+
         try {
-            randomUserBuilder.randomFromRange("numberOfShorts", lower1, upper1, lower2, upper2, lower3, upper3)
-                    .toBeBuilt(1000);
-            new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+            ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class)
+                    .randomFromRange("numberOfShorts", lower1, upper1, lower2, upper2, lower3, upper3)
+                    .toBeGenerated(1000).build();
+            new AggregatedObjectGenerator.Builder<User>().withObjectGenerator(userGenerator).build();
             Assert.fail();
         } catch (IllegalArgumentException e) {
             Assert.assertEquals("Invalid range bounds. Range definition must be stricly increasing.", e.getMessage());
         }
-
     }
 
     @Test
     public void should_throw_exception_when_ranges_are_defined_by_odd_number_of_elements() {
-
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
-
         short lower1 = 0;
         short upper1 = 5;
         short lower2 = 10;
         short upper2 = 15;
         short lower3 = 15;
         try {
-            randomUserBuilder.randomFromRange("numberOfShorts", lower1, upper1, lower2, upper2, lower3).toBeBuilt(1000);
-            new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+            ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class)
+                    .randomFromRange("numberOfShorts", lower1, upper1, lower2, upper2, lower3).toBeGenerated(1000)
+                    .build();
+            new AggregatedObjectGenerator.Builder<User>().withObjectGenerator(userGenerator).build();
             Assert.fail();
         } catch (IllegalArgumentException e) {
             Assert.assertEquals("Invalid ranges definition. Ranges must be defined with even number of elements.",
@@ -111,15 +104,18 @@ public class RandomBuilderTest {
 
     @Test
     public void should_create_dates_when_passed_multiple_ranges() {
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
         LocalDateTime date1960 = LocalDateTime.of(1960, 1, 1, 0, 0);
         LocalDateTime date1980 = LocalDateTime.of(1980, 1, 1, 0, 0);
         LocalDateTime date1990 = LocalDateTime.of(1990, 1, 1, 0, 0);
         LocalDateTime date2000 = LocalDateTime.of(2000, 1, 1, 0, 0);
-        randomUserBuilder.randomFromRange("birthDate", date1960, date1980, date1990, date2000).toBeBuilt(1000);
 
-        List<User> result = new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class)
+                .randomFromRange("birthDate", date1960, date1980, date1990, date2000).toBeGenerated(1000).build();
 
+        AggregatedObjectGenerator<User> aggregatedObjectGenerator = new AggregatedObjectGenerator.Builder<User>()
+                .withObjectGenerator(userGenerator).build();
+
+        List<User> result = aggregatedObjectGenerator.generateAll();
         Assert.assertEquals(1000, result.size());
 
         boolean atLeastOneInFirstRange = false;
@@ -139,7 +135,6 @@ public class RandomBuilderTest {
             } else {
                 Assert.fail("There are dates between defined ranges.");
             }
-
         }
 
         Assert.assertTrue(atLeastOneInFirstRange);
@@ -148,15 +143,18 @@ public class RandomBuilderTest {
 
     @Test
     public void should_create_dates() {
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
         Date date1960 = Date.from(LocalDateTime.of(1960, 1, 1, 0, 0).toInstant(ZoneOffset.UTC));
         Date date1980 = Date.from(LocalDateTime.of(1980, 1, 1, 0, 0).toInstant(ZoneOffset.UTC));
         Date date1990 = Date.from(LocalDateTime.of(1990, 1, 1, 0, 0).toInstant(ZoneOffset.UTC));
         Date date2000 = Date.from(LocalDateTime.of(2000, 1, 1, 0, 0).toInstant(ZoneOffset.UTC));
-        randomUserBuilder.randomFromRange("birthDate", date1960, date1980, date1990, date2000).toBeBuilt(1000);
 
-        List<User> result = new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class)
+                .randomFromRange("birthDate", date1960, date1980, date1990, date2000).toBeGenerated(1000).build();
 
+        AggregatedObjectGenerator<User> aggregatedObjectGenerator = new AggregatedObjectGenerator.Builder<User>()
+                .withObjectGenerator(userGenerator).build();
+
+        List<User> result = aggregatedObjectGenerator.generateAll();
         Assert.assertEquals(1000, result.size());
 
         boolean atLeastOneInFirstRange = false;
@@ -184,10 +182,12 @@ public class RandomBuilderTest {
 
     @Test
     public void should_accept_multiple_ranges_for_long() {
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
-        randomUserBuilder.randomFromRange("numberOfCards", 1L, 10L, 20L, 30L).toBeBuilt(1000);
-        List<User> result = new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class)
+                .randomFromRange("numberOfCards", 1L, 10L, 20L, 30L).toBeGenerated(1000).build();
+        AggregatedObjectGenerator<User> aggregatedObjectGenerator = new AggregatedObjectGenerator.Builder<User>()
+                .withObjectGenerator(userGenerator).build();
 
+        List<User> result = aggregatedObjectGenerator.generateAll();
         Assert.assertEquals(1000, result.size());
 
         boolean atLeastOneInFirstRange = false;
@@ -208,10 +208,12 @@ public class RandomBuilderTest {
 
     @Test
     public void should_accept_multiple_ranges_for_double() {
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
-        randomUserBuilder.randomFromRange("accountBalance", 1.0, 10.1, 20.0, 30.1).toBeBuilt(1000);
-        List<User> result = new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class)
+                .randomFromRange("accountBalance", 1.0, 10.1, 20.0, 30.1).toBeGenerated(1000).build();
+        AggregatedObjectGenerator<User> aggregatedObjectGenerator = new AggregatedObjectGenerator.Builder<User>()
+                .withObjectGenerator(userGenerator).build();
 
+        List<User> result = aggregatedObjectGenerator.generateAll();
         Assert.assertEquals(1000, result.size());
 
         boolean atLeastOneInFirstRange = false;
@@ -237,7 +239,6 @@ public class RandomBuilderTest {
         boolean isAtBegining = Math.abs(rangeStart - value) <= epsilon;
         boolean isAtEnd = Math.abs(rangeEnd - value - epsilon) <= epsilon;
         boolean isInRange = Math.abs(rangeEnd - value) >= Math.abs(rangeStart);
-
         return isAtBegining || isAtEnd || isInRange;
     }
 

@@ -15,21 +15,22 @@ public class RangeRuleDateTest {
 
     @Test
     public void should_set_birth_date_randomly_from_range() {
-        Randomizer randomizer = new RandomizerImpl();
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class, randomizer);
-
         LocalDateTime now = LocalDateTime.now();
-
         LocalDateTime tenDaysAgo = now.minusDays(10);
         LocalDateTime threeDaysAgo = now.minusDays(3);
 
-        randomUserBuilder.randomFromRange("birthDate", tenDaysAgo, threeDaysAgo).toBeBuilt(1000);
-        List<User> builtUsers = new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+        Randomizer randomizer = new RandomizerImpl();
 
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class, randomizer)
+                .randomFromRange("birthDate", tenDaysAgo, threeDaysAgo).toBeGenerated(1000).build();
 
-        Assert.assertEquals(1000, builtUsers.size());
+        AggregatedObjectGenerator<User> aggregatedObjectGenerator = new AggregatedObjectGenerator.Builder<User>()
+                .withObjectGenerator(userGenerator).build();
 
-        for (User u : builtUsers) {
+        List<User> result = aggregatedObjectGenerator.generateAll();
+        Assert.assertEquals(1000, result.size());
+
+        for (User u : result) {
             String message = "user must be born between 10 days ago and 3 days ago, but was: " + u.getBirthDate();
             boolean isExactlyTenDaysAgo = u.getBirthDate().toInstant().equals(tenDaysAgo.toInstant(ZoneOffset.UTC));
             boolean isAfterTenDaysAgo = u.getBirthDate().toInstant().isAfter(tenDaysAgo.toInstant(ZoneOffset.UTC));
@@ -38,5 +39,4 @@ public class RangeRuleDateTest {
             Assert.assertTrue(message, (isExactlyTenDaysAgo || isAfterTenDaysAgo) && isBeforeThreeDaysAgo);
         }
     }
-
 }

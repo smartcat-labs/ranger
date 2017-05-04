@@ -13,20 +13,19 @@ public class RangeRuleLongTest {
 
     @Test
     public void should_set_number_of_cards_randomly_from_range() {
-
         Randomizer randomizerMock = new RandomizerImpl();
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class, randomizerMock);
 
-        randomUserBuilder.randomFromRange("numberOfCards", 0L, 5L).toBeBuilt(1000);
-        List<User> builtUsers = new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class, randomizerMock)
+                .randomFromRange("numberOfCards", 0L, 5L).toBeGenerated(1000).build();
+        AggregatedObjectGenerator<User> aggregatedObjectGenerator = new AggregatedObjectGenerator.Builder<User>()
+                .withObjectGenerator(userGenerator).build();
 
-        Assert.assertEquals(1000, builtUsers.size());
+        List<User> result = aggregatedObjectGenerator.generateAll();
+        Assert.assertEquals(1000, result.size());
 
-        for (User u : builtUsers) {
+        for (User u : result) {
             String message = "user should have number of cards in range [0,5), but is was: " + u.getNumberOfCards();
             Assert.assertTrue(message, u.getNumberOfCards() >= 0L && u.getNumberOfCards() < 5L);
         }
-
     }
-
 }
