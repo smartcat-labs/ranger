@@ -72,7 +72,7 @@ public class RangeRuleInt implements Rule<Integer> {
         }
 
         /**
-         * Set range markers (i.e. a,b,c,d -> [a,b),[c,d)) for the rule.
+         * Set range markers (i.e. a,b,c,d -&gt; [a,b),[c,d)) for the rule.
          *
          * @param ranges array of Integers that denote the ranges.
          * @return Builder with set ranges of Integer.

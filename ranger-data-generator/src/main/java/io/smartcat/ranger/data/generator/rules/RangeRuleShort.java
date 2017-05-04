@@ -72,7 +72,7 @@ public class RangeRuleShort implements Rule<Short> {
         }
 
         /**
-         * Set range markers (i.e. a,b,c,d -> [a,b),[c,d)) for the rule.
+         * Set range markers (i.e. a,b,c,d -&gt; [a,b),[c,d)) for the rule.
          *
          * @param ranges array of Short that denote the ranges.
          * @return Builder with set ranges of Short.

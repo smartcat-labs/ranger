@@ -93,7 +93,7 @@ public class RangeRuleDate implements Rule<Date> {
         }
 
         /**
-         * Set range markers (i.e. a,b,c,d -> [a,b),[c,d)) for the rule.
+         * Set range markers (i.e. a,b,c,d -&gt; [a,b),[c,d)) for the rule.
          *
          * @param dates array of Dates that denote the ranges.
          * @return Builder with set ranges of dates.
@@ -109,7 +109,7 @@ public class RangeRuleDate implements Rule<Date> {
         }
 
         /**
-         * Set range markers (i.e. a,b,c,d -> [a,b),[c,d)) for the rule.
+         * Set range markers (i.e. a,b,c,d -&gt; [a,b),[c,d)) for the rule.
          *
          * @param dates List of Dates that denote the ranges.
          * @return Builder with set ranges of dates.

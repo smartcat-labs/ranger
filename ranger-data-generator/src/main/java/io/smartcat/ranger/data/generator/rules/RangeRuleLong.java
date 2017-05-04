@@ -76,7 +76,7 @@ public final class RangeRuleLong implements Rule<Long> {
         }
 
         /**
-         * Set range markers (i.e. a,b,c,d -> [a,b),[c,d)) for the rule.
+         * Set range markers (i.e. a,b,c,d -&gt; [a,b),[c,d)) for the rule.
          *
          * @param ranges array of Long that denote the ranges.
          * @return Builder with set ranges of Long.

@@ -12,7 +12,7 @@ import io.smartcat.ranger.data.generator.util.Randomizer;
  *
  * If {@code <T>} is immutable, this class is immutable as well.
  *
- * @param <T>
+ * @param <T> Type of value which will be generated.
  */
 public class SubListRule<T> implements Rule<List<T>> {
 
@@ -45,7 +45,7 @@ public class SubListRule<T> implements Rule<List<T>> {
     /**
      * Builder for SubListRule.
      *
-     * @param <T>
+     * @param <T> Type which {@link SubListRule} will generate.
      */
     public static class Builder<T> {
 
@@ -78,6 +78,5 @@ public class SubListRule<T> implements Rule<List<T>> {
         public SubListRule<T> build() {
             return new SubListRule<T>(this);
         }
-
     }
 }
