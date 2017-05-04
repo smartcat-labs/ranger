@@ -1,7 +1,7 @@
 package io.smartcat.ranger.load.generator.api;
 
 /**
- * Interface providing API for {@link LoadGenerator} source of data.
+ * Interface providing API for {@link io.smartcat.ranger.load.generator.LoadGenerator} source of data.
  *
  * @param <T> Type of the data provided by data source implementation.
  */
