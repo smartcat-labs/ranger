@@ -11,7 +11,7 @@ import io.smartcat.ranger.data.generator.util.Randomizer;
 /**
  * Rule for creating a set of random values that is a subset of passed allowed values.
  *
- * @param <T>
+ * @param <T> Type of value which will be generated.
  */
 public class SubSetRule<T> implements Rule<Set<T>> {
 
@@ -42,7 +42,7 @@ public class SubSetRule<T> implements Rule<Set<T>> {
     /**
      * Builder for SubSetRule.
      *
-     * @param <T>
+     * @param <T> Type which {@link SubSetRule} will generate.
      */
     public static class Builder<T> {
 

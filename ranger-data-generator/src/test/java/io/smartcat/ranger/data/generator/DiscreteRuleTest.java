@@ -15,19 +15,18 @@ public class DiscreteRuleTest {
 
     @Test
     public void should_set_usernames_randomly_from_the_provided_list() {
-
         Randomizer randomizer = new RandomizerImpl();
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class, randomizer);
 
-        randomUserBuilder
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class, randomizer)
                 .randomFrom("username", "destroyerOfW0rldz", "univerzalBlack", "johnycage", "subzero", "krelac")
-                .toBeBuilt(1000);
+                .toBeGenerated(1000).build();
 
-        List<User> builtUsers = new BuildRunner<User>().withBuilder(randomUserBuilder).build();
+        AggregatedObjectGenerator<User> aggregatedObjectGenerator = new AggregatedObjectGenerator.Builder<User>()
+                .withObjectGenerator(userGenerator).build();
 
         String[] usernames = {"destroyerOfW0rldz", "univerzalBlack", "johnycage", "subzero", "krelac"};
         List<String> allowedUsernames = new ArrayList<>(Arrays.asList(usernames));
-        for (User u : builtUsers) {
+        for (User u : aggregatedObjectGenerator) {
             String message = "username can only be from allowed set, but was: " + u.getUsername();
             Assert.assertTrue(message, allowedUsernames.contains(u.getUsername()));
         }

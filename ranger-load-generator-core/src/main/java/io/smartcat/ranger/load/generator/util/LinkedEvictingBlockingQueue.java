@@ -6,7 +6,7 @@ import java.util.concurrent.locks.ReentrantLock;
 /**
  * Blocking queue with eviction policy to evict elements if put is attempted when queue is full. Depending on
  * <code>dropFromHead</code> flag, can drop either from head or from tail. Implementation taken from
- * {@link java.util.concurrent.LinkedBlockngDeque} and adjusted.
+ * {@link java.util.concurrent.LinkedBlockingDeque} and adjusted.
  *
  * @param <T> Type of elements held in this collection.
  */

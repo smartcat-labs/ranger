@@ -1,7 +1,5 @@
 package io.smartcat.ranger.data.generator;
 
-import java.util.List;
-
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -14,13 +12,11 @@ public class UUIDRuleTest {
     @Test
     public void should_set_uuids() {
         Randomizer randomizer = new RandomizerImpl();
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class, randomizer);
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class, randomizer)
+                .randomUUID("username").toBeGenerated(10).build();
+        AggregatedObjectGenerator<User> aggregatedObjectGenerator = new AggregatedObjectGenerator.Builder<User>()
+                .withObjectGenerator(userGenerator).build();
 
-        randomUserBuilder.randomUUID("username").toBeBuilt(10);
-        List<User> builtUsers = new BuildRunner<User>().withBuilder(randomUserBuilder).build();
-
-        builtUsers.forEach(user -> Assert.assertEquals(36, user.getUsername().length()));
-
+        aggregatedObjectGenerator.forEach(user -> Assert.assertEquals(36, user.getUsername().length()));
     }
-
 }

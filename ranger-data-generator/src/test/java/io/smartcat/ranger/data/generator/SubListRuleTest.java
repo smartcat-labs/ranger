@@ -13,11 +13,11 @@ public class SubListRuleTest {
 
     @Test
     public void should_set_list_property() {
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
-        randomUserBuilder.randomFrom("username", "destroyerOfW0rldz")
-                .randomSubListFrom("favoriteMovies", "Predator", "LotR").toBeBuilt(1000);
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class)
+                .randomFrom("username", "destroyerOfW0rldz").randomSubListFrom("favoriteMovies", "Predator", "LotR")
+                .toBeGenerated(1000).build();
 
-        List<User> result = randomUserBuilder.buildAll();
+        List<User> result = userGenerator.generateAll();
 
         Assert.assertEquals(1000, result.size());
 
@@ -48,23 +48,22 @@ public class SubListRuleTest {
         Assert.assertTrue("should be at least one with empty list.", atLeastOneEmptyList);
         Assert.assertTrue("should be at least one with list of size one.", atLeastOneWithListOfSizeOne);
         Assert.assertTrue("should be at least one with list of size two.", atLeastOneWithListOfSizeTwo);
-
     }
 
     @Test
     @Ignore
     public void should_set_list_of_nested_objects() {
         // TODO this will be implemented as part of the ussue ##37
-        RandomBuilder<Address> randomAddressBuilder = new RandomBuilder<Address>(Address.class);
-        randomAddressBuilder.randomFrom("city", "Isengard", "Minas Tirith")
+        ObjectGenerator<Address> addressGenerator = new ObjectGenerator.Builder<Address>(Address.class)
+                .randomFrom("city", "Isengard", "Minas Tirith")
                 .randomFrom("street", "White Wizzard Boulevard", "Palantir's Square")
-                .randomFromRange("houseNumber", 5L, 7L);
+                .randomFromRange("houseNumber", 5L, 7L).build();
 
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
-        randomUserBuilder.randomFrom("username", "destroyerOfW0rldz")
-                .randomSubListWithBuilder("otherAddresses", randomAddressBuilder, 0, 2).toBeBuilt(1000);
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class)
+                .randomFrom("username", "destroyerOfW0rldz")
+                .randomSubListWithGenerator("otherAddresses", addressGenerator, 0, 2).toBeGenerated(1000).build();
 
-        List<User> result = randomUserBuilder.buildAll();
+        List<User> result = userGenerator.generateAll();
 
         Assert.assertEquals(1000, result.size());
 
@@ -133,7 +132,5 @@ public class SubListRuleTest {
 
         Assert.assertTrue("should be at least one with street White Wizzard Boulevard.", atLeastOneWWB);
         Assert.assertTrue("should be at least one with street Palantir's Square.", atLeastOnePS);
-
     }
-
 }

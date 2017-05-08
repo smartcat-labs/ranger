@@ -11,11 +11,11 @@ public class SubSetRuleTest {
 
     @Test
     public void should_set_set_property() {
-        RandomBuilder<User> randomUserBuilder = new RandomBuilder<User>(User.class);
-        randomUserBuilder.randomFrom("username", "Melkor").randomSubsetFrom("nicknames", "Belegurth", "Morgoth")
-                .toBeBuilt(1000);
+        ObjectGenerator<User> userGenerator = new ObjectGenerator.Builder<User>(User.class)
+                .randomFrom("username", "Melkor").randomSubsetFrom("nicknames", "Belegurth", "Morgoth")
+                .toBeGenerated(1000).build();
 
-        List<User> result = randomUserBuilder.buildAll();
+        List<User> result = userGenerator.generateAll();
 
         Assert.assertEquals(1000, result.size());
 
@@ -46,7 +46,5 @@ public class SubSetRuleTest {
         Assert.assertTrue("should be at least one with empty list.", atLeastOneEmptySet);
         Assert.assertTrue("should be at least one with list of size one.", atLeastOneWithSetOfSizeOne);
         Assert.assertTrue("should be at least one with list of size two.", atLeastOneWithSetOfSizeTwo);
-
     }
-
 }
