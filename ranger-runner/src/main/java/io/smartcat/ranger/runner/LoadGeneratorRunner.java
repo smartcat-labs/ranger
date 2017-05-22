@@ -20,6 +20,7 @@ import org.reflections.Reflections;
 import io.smartcat.ranger.configuration.BaseConfiguration;
 import io.smartcat.ranger.configuration.DataSourceConfiguration;
 import io.smartcat.ranger.configuration.GlobalConfiguration;
+import io.smartcat.ranger.configuration.LoadGeneratorConfiguration;
 import io.smartcat.ranger.configuration.RateGeneratorConfiguration;
 import io.smartcat.ranger.configuration.WorkerConfiguration;
 import io.smartcat.ranger.configuration.YamlConfigurationLoader;
@@ -27,6 +28,7 @@ import io.smartcat.ranger.load.generator.LoadGenerator;
 import io.smartcat.ranger.load.generator.api.DataSource;
 import io.smartcat.ranger.load.generator.api.RateGenerator;
 import io.smartcat.ranger.load.generator.api.Worker;
+import io.smartcat.ranger.load.generator.worker.AsyncWorker;
 
 /**
  * Runner which takes configuration file, constructs {@link LoadGenerator} with depending {@link DataSource},
@@ -70,13 +72,16 @@ public class LoadGeneratorRunner {
     private static void generateLoad(String configFilePath) throws Exception {
         YamlConfigurationLoader configurationLoader = new YamlConfigurationLoader();
         GlobalConfiguration configuration = configurationLoader.loadConfig(getURL(configFilePath));
-        DataSource dataSource = getDataSource(configuration.loadGeneratorConfiguration.dataSourceConfigurationName,
+        LoadGeneratorConfiguration loadGeneratorConfiguration = configuration.loadGeneratorConfiguration;
+        loadGeneratorConfiguration.validate();
+        DataSource dataSource = getDataSource(loadGeneratorConfiguration.dataSourceConfigurationName,
                 configuration.dataSourceConfiguration);
-        RateGenerator rateGenerator = getRateGenerator(
-                configuration.loadGeneratorConfiguration.rateGeneratorConfigurationName,
+        RateGenerator rateGenerator = getRateGenerator(loadGeneratorConfiguration.rateGeneratorConfigurationName,
                 configuration.rateGeneratorConfiguration);
-        Worker worker = getWorker(configuration.loadGeneratorConfiguration.workerConfigurationName,
+        Worker workerDelegate = getWorker(loadGeneratorConfiguration.workerConfigurationName,
                 configuration.workerConfiguration);
+        Worker worker = wrapIntoAsyncWorker(workerDelegate, loadGeneratorConfiguration.threadCount,
+                loadGeneratorConfiguration.queueCapacity);
 
         LoadGenerator loadGenerator = new LoadGenerator(dataSource, rateGenerator, worker);
         loadGenerator.run();
@@ -111,6 +116,10 @@ public class LoadGeneratorRunner {
     private static Worker<?> getWorker(String name, Map<String, Object> configuration) {
         WorkerConfiguration workerConfguration = getConfigurationWithName(name, WorkerConfiguration.class);
         return workerConfguration.getWorker(configuration);
+    }
+
+    private static <T> Worker<T> wrapIntoAsyncWorker(Worker<T> workerDelegate, int threadCount, int queueCapacity) {
+        return new AsyncWorker<>(workerDelegate, queueCapacity, (x) -> { }, true, threadCount);
     }
 
     private static <T extends BaseConfiguration> T getConfigurationWithName(String name, Class<T> clazz) {
