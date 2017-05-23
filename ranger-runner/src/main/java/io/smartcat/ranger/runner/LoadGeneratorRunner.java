@@ -18,6 +18,7 @@ import org.apache.commons.cli.ParseException;
 import org.reflections.Reflections;
 
 import io.smartcat.ranger.configuration.BaseConfiguration;
+import io.smartcat.ranger.configuration.ConfigurationParseException;
 import io.smartcat.ranger.configuration.DataSourceConfiguration;
 import io.smartcat.ranger.configuration.GlobalConfiguration;
 import io.smartcat.ranger.configuration.LoadGeneratorConfiguration;
@@ -102,24 +103,27 @@ public class LoadGeneratorRunner {
     }
 
     private static DataSource<?> getDataSource(String name, Map<String, Object> configuration)
-            throws InstantiationException, IllegalAccessException {
+            throws InstantiationException, IllegalAccessException, ConfigurationParseException {
         DataSourceConfiguration dataSourceConfguration = getConfigurationWithName(name, DataSourceConfiguration.class);
         return dataSourceConfguration.getDataSource(configuration);
     }
 
-    private static RateGenerator getRateGenerator(String name, Map<String, Object> configuration) {
+    private static RateGenerator getRateGenerator(String name, Map<String, Object> configuration)
+            throws ConfigurationParseException {
         RateGeneratorConfiguration rateGeneratorConfguration = getConfigurationWithName(name,
                 RateGeneratorConfiguration.class);
         return rateGeneratorConfguration.getRateGenerator(configuration);
     }
 
-    private static Worker<?> getWorker(String name, Map<String, Object> configuration) {
+    private static Worker<?> getWorker(String name, Map<String, Object> configuration)
+            throws ConfigurationParseException {
         WorkerConfiguration workerConfguration = getConfigurationWithName(name, WorkerConfiguration.class);
         return workerConfguration.getWorker(configuration);
     }
 
     private static <T> Worker<T> wrapIntoAsyncWorker(Worker<T> workerDelegate, int threadCount, int queueCapacity) {
-        return new AsyncWorker<>(workerDelegate, queueCapacity, (x) -> { }, true, threadCount);
+        return new AsyncWorker<>(workerDelegate, queueCapacity, (x) -> {
+        }, true, threadCount);
     }
 
     private static <T extends BaseConfiguration> T getConfigurationWithName(String name, Class<T> clazz) {
