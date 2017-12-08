@@ -162,6 +162,26 @@ Any variation would create `ObjectGenerator` which will generate following seque
 .
 ```
 
+## Random Length List
+
+Generates random length list out of specified `ObjectGenerator`.
+
+```java
+ObjectGenerator<List<Integer>> numbers = list(3, 5, random(10, 100));
+```
+
+This would create `ObjectGenerator` which will generate lists with minimum 3 and
+maximum 5 members:
+```
+[16, 36, 44]
+[92, 96, 33, 25]
+[12, 14, 54]
+[78, 79, 35, 88, 96]
+.
+.
+.
+```
+
 ## Weighted distribution
 
 Generates values with probability based on their weights.

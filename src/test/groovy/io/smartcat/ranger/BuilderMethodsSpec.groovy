@@ -287,6 +287,23 @@ class BuilderMethodsSpec extends Specification {
         result2.names == ["Peter", "Rodger", "Steve"]
     }
 
+    def "use random length list"() {
+        given:
+        def gen = new ObjectGeneratorBuilder().prop("numbers", list(5, 9, random(range(10, 100)))).build()
+
+        when:
+        def result1 = gen.next()
+
+        then:
+        result1.numbers.size() >= 5 && result1.numbers.size() <= 9
+
+        when:
+        def result2 = gen.next()
+
+        then:
+        result2.numbers.size() >= 5 && result2.numbers.size() <= 9
+    }
+
     def "use random content string without ranges"() {
         given:
         def gen = new ObjectGeneratorBuilder().prop("randomString", randomContentString(constant(5))).build()

@@ -15,6 +15,7 @@ import io.smartcat.ranger.core.ExactWeightedValue;
 import io.smartcat.ranger.core.ExactWeightedValue.CountValuePair;
 import io.smartcat.ranger.core.JsonTransformer;
 import io.smartcat.ranger.core.ListValue;
+import io.smartcat.ranger.core.RandomLengthListValue;
 import io.smartcat.ranger.core.NowDateValue;
 import io.smartcat.ranger.core.NowLocalDateTimeValue;
 import io.smartcat.ranger.core.NowLocalDateValue;
@@ -645,6 +646,22 @@ public class ValueExpressionParser extends BaseParser<Object> {
     }
 
     /**
+     * Random length list value definition.
+     *
+     * @return Random length list value definition rule.
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    public Rule randomLengthListValue() {
+        return Sequence(
+            function(
+                "list",
+                Sequence(numberLiteral(), comma(), numberLiteral(), comma(), value())
+            ),
+            push(new RandomLengthListValue((int) pop(2), (int) pop(1), (Value) pop(0)))
+        );
+    }
+
+    /**
      * Weighted value pair definition.
      *
      * @return Weighted value pair definition rule.
@@ -741,8 +758,8 @@ public class ValueExpressionParser extends BaseParser<Object> {
      */
     public Rule generator() {
         return FirstOf(discreteValue(), rangeValue(), uuidValue(), circularValue(), circularRangeValue(), listValue(),
-                weightedValue(), exactWeightedValue(), randomContentStringValue(), now(), nowDate(), nowLocalDate(),
-                nowLocalDateTime());
+                randomLengthListValue(), weightedValue(), exactWeightedValue(), randomContentStringValue(), now(),
+                nowDate(), nowLocalDate(), nowLocalDateTime());
     }
 
     /**

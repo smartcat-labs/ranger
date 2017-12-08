@@ -1061,6 +1061,34 @@ output: \$value
         dataGenerator.next() == ["Ema", "Mike", "Ned", "Lisa"]
     }
 
+    def "should parse random length list value"() {
+        given:
+        def config = """
+values:
+  value: list(3, 5, random(10..100))
+output: \$value
+"""
+        def dataGenerator = buildGenerator(config)
+
+        when:
+        def val1 = dataGenerator.next()
+
+        then:
+        val1.size() >= 3 && val1.size() < 5
+
+        when:
+        def val2 = dataGenerator.next()
+
+        then:
+        val2.size() >= 3 && val2.size() < 5
+
+        when:
+        def val3 = dataGenerator.next()
+
+        then:
+        val3.size() >= 3 && val3.size() < 5
+    }
+
     def "should parse now"() {
         given:
         def config = """
@@ -1170,7 +1198,7 @@ output: \$value
         def executeMap = [:]
 
         when:
-        totalCount.times { 
+        totalCount.times {
             def val = dataGenerator.next()
             executeMap[val] == null ? executeMap[val] = 1 : executeMap[val]++
         }
