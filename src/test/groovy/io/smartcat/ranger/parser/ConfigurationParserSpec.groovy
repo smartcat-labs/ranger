@@ -5,6 +5,8 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+import org.hamcrest.core.Every
+
 import io.smartcat.ranger.core.InvalidRangeBoundsException
 import io.smartcat.ranger.core.RangeValueDouble
 import io.smartcat.ranger.core.ExactWeightedValue.ExactWeightedValueDepletedException
@@ -1061,7 +1063,7 @@ output: \$value
         dataGenerator.next() == ["Ema", "Mike", "Ned", "Lisa"]
     }
 
-    def "should parse random length list value"() {
+    def "should parse random length list value with no distribution"() {
         given:
         def config = """
 values:
@@ -1075,18 +1077,52 @@ output: \$value
 
         then:
         val1.size() >= 3 && val1.size() < 5
+        val1.every { it >= 10 && it <= 100 }
 
         when:
         def val2 = dataGenerator.next()
 
         then:
         val2.size() >= 3 && val2.size() < 5
+        val2.every { it >= 10 && it <= 100 }
 
         when:
         def val3 = dataGenerator.next()
 
         then:
         val3.size() >= 3 && val3.size() < 5
+        val3.every { it >= 10 && it <= 100 }
+    }
+
+    def "should parse random length list value with distribution"() {
+        given:
+        def config = """
+values:
+  value: list(3, 5, random(10..100), normal())
+output: \$value
+"""
+        def dataGenerator = buildGenerator(config)
+
+        when:
+        def val1 = dataGenerator.next()
+
+        then:
+        val1.size() >= 3 && val1.size() < 5
+        val1.every { it >= 10 && it <= 100 }
+
+        when:
+        def val2 = dataGenerator.next()
+
+        then:
+        val2.size() >= 3 && val2.size() < 5
+        val2.every { it >= 10 && it <= 100 }
+
+        when:
+        def val3 = dataGenerator.next()
+
+        then:
+        val3.size() >= 3 && val3.size() < 5
+        val3.every { it >= 10 && it <= 100 }
     }
 
     def "should parse now"() {

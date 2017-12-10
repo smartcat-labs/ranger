@@ -165,13 +165,17 @@ Any variation would create `ObjectGenerator` which will generate following seque
 ## Random Length List
 
 Generates random length list out of specified `ObjectGenerator`.
+There are two parameter variations:
 
 ```java
-ObjectGenerator<List<Integer>> numbers = list(3, 5, random(10, 100));
+ObjectGenerator<Integer> randomNumbers = random(10, 100);
+ObjectGenerator<List<Integer>> numbers = list(3, 5, randomNumbers);
+
+ObjectGenerator<Integer> randomNumbers = random(10, 100);
+ObjectGenerator<List<Integer>> numbers = list(3, 5, randomNumbers, new UniformDistribution());
 ```
 
-This would create `ObjectGenerator` which will generate lists with minimum 3 and
-maximum 5 members:
+Any variation would create `ObjectGenerator` which will generate lists with minimum 3 and maximum 5 members:
 ```
 [16, 36, 44]
 [92, 96, 33, 25]
@@ -181,6 +185,8 @@ maximum 5 members:
 .
 .
 ```
+
+Note that object generator used within random list generator (in this case `randomNumbers`) should not be referenced in any other object generator within hierarchy since its values are reset and regenerated multiple times while list is constructed. Referencing it in any other place would result in having different values across value hierarchy.
 
 ## Weighted distribution
 

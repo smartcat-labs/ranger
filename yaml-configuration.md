@@ -247,10 +247,13 @@ This would create `ObjectGenerator` which will generate following sequence:
 ## Random Length List
 
 Generates random length list out of specified `ObjectGenerator`.
+There are two parameter variations:
 
 ```yaml
 values:
-  names: list(3, 5, random(10..100))
+  r: random(10..100)
+  names: list(3, 5, $r)
+  names: list(3, 5, $r, uniform())
 ```
 
 This would create `ObjectGenerator` which will generate lists with minimum 3 and
@@ -264,6 +267,8 @@ maximum 5 members:
 .
 .
 ```
+
+Note that object generator used within random list generator (in this case `r`) should not be referenced in any other object generator within hierarchy since its values are reset and regenerated multiple times while list is constructed. Referencing it in any other place would result in having different values across value hierarchy.
 
 ## Weighted distribution
 

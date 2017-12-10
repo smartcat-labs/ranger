@@ -296,12 +296,14 @@ class BuilderMethodsSpec extends Specification {
 
         then:
         result1.numbers.size() >= 5 && result1.numbers.size() <= 9
+        result1.numbers.every { it >= 10 && it <= 100 }
 
         when:
         def result2 = gen.next()
 
         then:
         result2.numbers.size() >= 5 && result2.numbers.size() <= 9
+        result2.numbers.every { it >= 10 && it <= 100 }
     }
 
     def "use random content string without ranges"() {

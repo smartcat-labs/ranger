@@ -25,6 +25,7 @@ import io.smartcat.ranger.core.NowLocalDateValue;
 import io.smartcat.ranger.core.NowValue;
 import io.smartcat.ranger.core.ConstantValue;
 import io.smartcat.ranger.core.RandomContentStringValue;
+import io.smartcat.ranger.core.RandomLengthListValue;
 import io.smartcat.ranger.core.RangeValue;
 import io.smartcat.ranger.core.RangeValueByte;
 import io.smartcat.ranger.core.RangeValueDate;
@@ -310,20 +311,35 @@ public class BuilderMethods {
     }
 
     /**
-     * Creates an instance of {@link ObjectGenerator} which generates random length list containing
-     * all values specified.
+     * Creates an instance of {@link ObjectGenerator} which generates random length list containing all values
+     * specified.
      *
      * @param minLength Minimum length for result list.
      * @param maxLength Maximum length for result list.
      * @param elementGenerator Values generator.
      * @param <T> Type instance of {@link ObjectGenerator} will generate.
-     * @return An instance of {@link ObjectGenerator} which generates list containing generated elements
-     * with size between minLength and maxLength.
+     * @return An instance of {@link ObjectGenerator} which generates list containing generated elements with size
+     *         between minLength and maxLength.
      */
     public static <T> ObjectGenerator<List<T>> list(int minLength, int maxLength, ObjectGenerator<T> elementGenerator) {
-        int randomLength = random(range(minLength, maxLength + 1)).value.get();
-        List<T> elements = elementGenerator.generate(randomLength);
-        return wrap(new ListValue<>(unwrap(elements)));
+        return wrap(new RandomLengthListValue<>(minLength, maxLength, elementGenerator.value));
+    }
+
+    /**
+     * Creates an instance of {@link ObjectGenerator} which generates random length list containing all values
+     * specified.
+     *
+     * @param minLength Minimum length for result list.
+     * @param maxLength Maximum length for result list.
+     * @param elementGenerator Values generator.
+     * @param distribution Distribution to use for number of items in list.
+     * @param <T> Type instance of {@link ObjectGenerator} will generate.
+     * @return An instance of {@link ObjectGenerator} which generates list containing generated elements with size
+     *         between minLength and maxLength.
+     */
+    public static <T> ObjectGenerator<List<T>> list(int minLength, int maxLength, ObjectGenerator<T> elementGenerator,
+            Distribution distribution) {
+        return wrap(new RandomLengthListValue<>(minLength, maxLength, elementGenerator.value, distribution));
     }
 
     /**

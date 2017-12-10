@@ -650,14 +650,9 @@ public class ValueExpressionParser extends BaseParser<Object> {
      *
      * @return Random length list value definition rule.
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Rule randomLengthListValue() {
-        return Sequence(
-            function(
-                "list",
-                Sequence(numberLiteral(), comma(), numberLiteral(), comma(), value())
-            ),
-            push(new RandomLengthListValue((int) pop(2), (int) pop(1), (Value) pop(0)))
+        return Sequence(function("list", Sequence(numberLiteral(), comma(), numberLiteral(), comma(), value(),
+                Optional(comma(), distribution()))), push(createRandomLengthListValue())
         );
     }
 
@@ -897,6 +892,24 @@ public class ValueExpressionParser extends BaseParser<Object> {
         Boolean useEdgeCases = peek() instanceof Boolean ? (Boolean) pop() : null;
         Range range = (Range) pop();
         return rangeValueFactory.create(range, useEdgeCases, dist);
+    }
+
+    /**
+     * Creates random length list value.
+     *
+     * @return Instance of {@link RandomLengthListValue}.
+     */
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected RandomLengthListValue createRandomLengthListValue() {
+        Distribution dist = peek() instanceof Distribution ? (Distribution) pop() : null;
+        Value elementGenerator = (Value) pop();
+        int maxLength = (int) pop();
+        int minLength = (int) pop();
+        if (dist == null) {
+            return new RandomLengthListValue(minLength, maxLength, elementGenerator);
+        } else {
+            return new RandomLengthListValue(minLength, maxLength, elementGenerator, dist);
+        }
     }
 
     /**

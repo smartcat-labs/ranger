@@ -1,7 +1,7 @@
 package io.smartcat.ranger.core;
 
 import io.smartcat.ranger.distribution.Distribution;
-import io.smartcat.ranger.distribution.NormalDistribution;
+import io.smartcat.ranger.distribution.UniformDistribution;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -27,29 +27,39 @@ public class RandomLengthListValue<T> extends Value<List<T>> {
      * @param elementGenerator Element generator
      */
     public RandomLengthListValue(int minLength, int maxLength, Value<T> elementGenerator) {
+        this(minLength, maxLength, elementGenerator, new UniformDistribution());
+    }
+
+    /**
+     * Constructs random length list value out of specified values.
+     *
+     * @param minLength Minimum list length
+     * @param maxLength Maximum list length
+     * @param elementGenerator Element generator
+     * @param distribution Distribution to use for number of items in list.
+     */
+    public RandomLengthListValue(int minLength, int maxLength, Value<T> elementGenerator, Distribution distribution) {
         if (elementGenerator == null) {
             throw new IllegalArgumentException("Element Generator cannot be null nor empty.");
         }
         this.minLength = minLength;
         this.maxLength = maxLength;
         this.elementGenerator = elementGenerator;
-        this.distribution = new NormalDistribution();
+        this.distribution = distribution;
     }
 
     @Override
     public void reset() {
         super.reset();
-        // for (Value<T> value : values) {
-        //     value.reset();
-        // }
     }
 
     @Override
     protected void eval() {
-        int randomLength = distribution.nextInt(this.minLength, this.maxLength);
+        int randomLength = distribution.nextInt(minLength, maxLength);
         List<T> result = new ArrayList<>();
         for (int i = 0; i < randomLength; i++) {
-            result.add(this.elementGenerator.get());
+            result.add(elementGenerator.get());
+            elementGenerator.reset();
         }
         val = Collections.unmodifiableList(result);
     }
