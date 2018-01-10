@@ -17,6 +17,7 @@ import io.smartcat.ranger.core.CircularValue;
 import io.smartcat.ranger.core.DiscreteValue;
 import io.smartcat.ranger.core.ExactWeightedValue;
 import io.smartcat.ranger.core.ExactWeightedValue.CountValuePair;
+import io.smartcat.ranger.core.GetterTransformer;
 import io.smartcat.ranger.core.JsonTransformer;
 import io.smartcat.ranger.core.ListValue;
 import io.smartcat.ranger.core.NowDateValue;
@@ -472,6 +473,20 @@ public class BuilderMethods {
      */
     public static <T> ObjectGenerator<String> time(String format, ObjectGenerator<T> generator) {
         return wrap(new TimeFormatTransformer(format, generator.value));
+    }
+
+    /**
+     * Creates an instance of {@link ObjectGenerator} which extracts property with given name and type from specified
+     * instance of {@link ObjectGenerator}.
+     *
+     * @param keyName Name of the key.
+     * @param keyType Type of the key.
+     * @param generator Instance of {@link ObjectGenerator} from which value will be extracted.
+     * @param <T> Type object generator will return.
+     * @return An instance of {@link ObjectGenerator} which extracts property.
+     */
+    public static <T> ObjectGenerator<T> get(String keyName, Class<T> keyType, ObjectGenerator<?> generator) {
+        return wrap(new GetterTransformer<>(keyName, keyType, generator.value));
     }
 
     /**

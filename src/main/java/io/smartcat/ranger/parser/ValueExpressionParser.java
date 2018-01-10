@@ -10,6 +10,7 @@ import org.parboiled.Rule;
 
 import io.smartcat.ranger.core.CircularRangeValueFactory;
 import io.smartcat.ranger.core.CircularValue;
+import io.smartcat.ranger.core.GetterTransformer;
 import io.smartcat.ranger.core.DiscreteValue;
 import io.smartcat.ranger.core.ExactWeightedValue;
 import io.smartcat.ranger.core.ExactWeightedValue.CountValuePair;
@@ -788,12 +789,24 @@ public class ValueExpressionParser extends BaseParser<Object> {
     }
 
     /**
+     * Getter transformer definition.
+     *
+     * @return Getter transformer definition rule.
+     */
+    @SuppressWarnings({ "rawtypes" })
+    public Rule getterTransformer() {
+        return Sequence(function("get", Sequence(stringLiteral(), comma(), value())),
+                push(new GetterTransformer<>((String) pop(1), Object.class, (Value) pop())));
+    }
+
+    /**
      * Transformer definition.
      *
      * @return Transformer definition rule.
      */
     public Rule transformer() {
-        return FirstOf(stringTransformer(), jsonTransformer(), timeFormatTransformer());
+        return FirstOf(stringTransformer(), jsonTransformer(), timeFormatTransformer(),
+                getterTransformer());
     }
 
     /**

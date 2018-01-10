@@ -346,3 +346,22 @@ Possible generated values are:
 
 {"id":3,"username":"johnsnow35","firstName":"Michael","lastName":"Atkinson","maried":false,"accountBalance":9636.00274910154,"address":{"city":"New York","street":"Main St","houseNumber":37}}
 ```
+
+## Getter Transformer
+
+Extracts property value from complex `ObjectGenerator`.
+
+```java
+ObjectGenerator<Map<String, Object>> address = new ObjectGeneratorBuilder()
+    .prop("city", random("New York", "Washington", "San Francisco"))
+    .prop("street", random("2nd St", "5th Avenue", "21st St", "Main St"))
+    .prop("houseNumber", random(range(1, 55))).build();
+
+ObjectGenerator<String> city = get("city", String.class, address);
+```
+
+Possible generated values are:
+
+```
+"New York", "Washington", "San Francisco", ...
+```

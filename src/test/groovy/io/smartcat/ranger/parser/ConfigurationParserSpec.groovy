@@ -48,6 +48,28 @@ output: $_other2_value
         dataGenerator.next() == 10
     }
 
+    def "should use value from random child"() {
+        given:
+        def config = '''
+values:
+  a:
+    x: 10
+    y: 100
+  b:
+    x: 20
+    y: 200
+  c:
+    x: 30
+    y: 300
+  val: random([$a, $b, $c])
+output: get("x", $val)
+'''
+        def dataGenerator = buildGenerator(config)
+
+        expect:
+        dataGenerator.next() in [10, 20, 30]
+    }
+
     def "should use value from closest visible context for given reference"() {
         given:
         def config = '''

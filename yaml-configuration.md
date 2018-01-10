@@ -293,7 +293,7 @@ Having weighted distribution is great, at least for some use cases. But there ar
 
 ```yaml
 values:
-  names: exactly(("Stephen", 11), ("George", 50), ("Charles", 39))
+  names: exactly([("Stephen", 11), ("George", 50), ("Charles", 39)])
 output: $names
 ```
 
@@ -432,6 +432,40 @@ Possible generated values are:
 {"id":2,"username":"mike99","firstName":"Rodger","lastName":"Smith","maried":false,"accountBalance":9999.99999999999,"address":{"city":"San Francisco","street":"21st St","houseNumber":54}}
 
 {"id":3,"username":"johnsnow35","firstName":"Michael","lastName":"Atkinson","maried":false,"accountBalance":9636.00274910154,"address":{"city":"New York","street":"Main St","houseNumber":37}}
+```
+
+## Getter Transformer
+
+Extracts property value from complex `ObjectGenerator`, useful for data correlation.
+
+```yaml
+values:
+  lightLoad:
+    type: LIGHT
+    value: random(1..10)
+  mediumLoad:
+    type: MEDIUM
+    value: random(11..100)
+  heavyLoad:
+    type: HEAVY
+    value: random(101..1000)
+  randomLoad: random($lightLoad, $mediumLoad, $heavyLoad)
+  load:
+    additionalField: "Some value"
+    additionalField2: true
+    type: get("type", $randomLoad)
+    value: get("value", $randomLoad)
+output: $load
+```
+
+Possible generated values are maps with values, for brevity, presented here as json:
+
+```
+{ "additionalFields": "Some value", "additionalFields2": true, type: "LIGHT", value: 4 },
+{ "additionalFields": "Some value", "additionalFields2": true, type: "HEAVY", value: 120 },
+{ "additionalFields": "Some value", "additionalFields2": true, type: "MEDIUM", value: 94 },
+{ "additionalFields": "Some value", "additionalFields2": true, type: "HEAVY", value: 823 },
+...
 ```
 
 # Combining API
