@@ -311,7 +311,7 @@ Generates values with probability based on their weights.
 
 ```yaml
 values:
-  names: weighted(("Stephen", 11.5), ("George", 50), ("Charles", 38.5))
+  names: weighted([("Stephen", 11.5), ("George", 50), ("Charles", 38.5)])
 ```
 
 This would create `ObjectGenerator` which can generate possible sequence:
