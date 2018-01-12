@@ -13,6 +13,7 @@ import io.smartcat.ranger.core.CircularValue;
 import io.smartcat.ranger.core.ConstantValue;
 import io.smartcat.ranger.core.DiscreteValue;
 import io.smartcat.ranger.core.EmptyListValue;
+import io.smartcat.ranger.core.EmptyMapValue;
 import io.smartcat.ranger.core.ExactWeightedValue;
 import io.smartcat.ranger.core.ExactWeightedValue.CountValuePair;
 import io.smartcat.ranger.core.GetterTransformer;
@@ -682,6 +683,16 @@ public class ValueExpressionParser extends BaseParser<Object> {
     }
 
     /**
+     * Empty map value definition.
+     *
+     * @return Empty map value definition rule.
+     */
+    @SuppressWarnings({ "rawtypes" })
+    public Rule emptyMapValue() {
+        return Sequence(function("emptyMap"), push(new EmptyMapValue()));
+    }
+
+    /**
      * Random length list value definition.
      *
      * @return Random length list value definition rule.
@@ -829,7 +840,7 @@ public class ValueExpressionParser extends BaseParser<Object> {
      */
     public Rule generator() {
         return FirstOf(discreteValue(), rangeValue(), uuidValue(), circularValue(), circularRangeValue(), listValue(),
-                emptyListValue(), randomLengthListValue(), weightedValue(), exactWeightedValue(),
+                emptyListValue(), emptyMapValue(), randomLengthListValue(), weightedValue(), exactWeightedValue(),
                 randomContentStringValue(), now(), nowDate(), nowLocalDate(), nowLocalDateTime(), additionValue(),
                 subtractionValue(), multiplicationValue(), divisionValue());
     }

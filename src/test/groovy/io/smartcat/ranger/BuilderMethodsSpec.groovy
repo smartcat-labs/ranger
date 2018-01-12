@@ -298,6 +298,17 @@ class BuilderMethodsSpec extends Specification {
         result.names == []
     }
 
+    def "use empty map"() {
+        given:
+        def gen = new ObjectGeneratorBuilder().prop("names", emptyMap()).build()
+
+        when:
+        def result = gen.next()
+
+        then:
+        result.names == [:]
+    }
+
     def "use random length list"() {
         given:
         def gen = new ObjectGeneratorBuilder().prop("numbers", list(5, 9, random(range(10, 100)))).build()

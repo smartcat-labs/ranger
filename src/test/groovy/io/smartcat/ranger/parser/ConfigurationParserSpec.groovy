@@ -1098,6 +1098,19 @@ output: \$value
         dataGenerator.next() == []
     }
 
+    def "should parse empty map value"() {
+        when:
+        def config = """
+values:
+  value: emptyMap()
+output: \$value
+"""
+        def dataGenerator = buildGenerator(config)
+
+        then:
+        dataGenerator.next() == [:]
+    }
+
     def "should parse random length list value with no distribution"() {
         given:
         def config = """

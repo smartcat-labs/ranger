@@ -255,6 +255,30 @@ values:
 
 This generates empty list.
 
+## Empty map
+
+Generates empty map.
+
+```yaml
+values:
+  names: emptyMap()
+```
+
+This generates empty map.
+It is useful when generating JSON with empty object. For example;
+
+```yaml
+values:
+  user:
+    username: peter
+    email: email_address@domain.com
+    address: emptyMap()
+  jsonUser: json($user)
+```
+
+This will generate:
+`{"username:"peter","email":"email_address@domain.com","address":{}}`
+
 ## Random Length List
 
 Generates random length list out of specified `ObjectGenerator`.

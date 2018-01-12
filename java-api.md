@@ -172,6 +172,16 @@ emptyList()
 
 Generates empty list every time.
 
+## Empty map
+
+Generates empty map.
+
+```java
+emptyMap()
+```
+
+Generates empty map every time.
+
 ## Random Length List
 
 Generates random length list out of specified `ObjectGenerator`.

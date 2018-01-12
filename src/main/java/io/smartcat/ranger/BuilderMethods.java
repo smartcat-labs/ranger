@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import io.smartcat.ranger.core.CircularRangeValueByte;
 import io.smartcat.ranger.core.CircularRangeValueDouble;
@@ -17,6 +18,7 @@ import io.smartcat.ranger.core.CircularValue;
 import io.smartcat.ranger.core.ConstantValue;
 import io.smartcat.ranger.core.DiscreteValue;
 import io.smartcat.ranger.core.EmptyListValue;
+import io.smartcat.ranger.core.EmptyMapValue;
 import io.smartcat.ranger.core.ExactWeightedValue;
 import io.smartcat.ranger.core.ExactWeightedValue.CountValuePair;
 import io.smartcat.ranger.core.GetterTransformer;
@@ -344,6 +346,17 @@ public class BuilderMethods {
      */
     public static <T> ObjectGenerator<List<T>> emptyList() {
         return wrap(new EmptyListValue<>());
+    }
+
+    /**
+     * Creates an instance of {@link ObjectGenerator} which generates empty map.
+     *
+     * @param <K> Key type of map which {@link ObjectGenerator} will generate.
+     * @param <V> Value type of map which {@link ObjectGenerator} will generate.
+     * @return An instance of {@link ObjectGenerator} which generates empty map.
+     */
+    public static <K, V> ObjectGenerator<Map<K, V>> emptyMap() {
+        return wrap(new EmptyMapValue<>());
     }
 
     /**
