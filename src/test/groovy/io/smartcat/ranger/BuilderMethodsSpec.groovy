@@ -7,7 +7,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-import io.smartcat.ranger.model.Address
+import spock.lang.IgnoreRest
 import spock.lang.Specification
 import spock.lang.Unroll
 
@@ -391,6 +391,102 @@ class BuilderMethodsSpec extends Specification {
         "nowDate"          | new SimpleDateFormat("yyyy-MM-dd").format(new Date())
         "nowLocalDate"     | LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
         "nowLocalDateTime" | LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+    }
+
+    @Unroll
+    def "use addition with #text"() {
+        given:
+        def gen = new ObjectGeneratorBuilder()
+        .prop("number", val).build()
+
+        when:
+        def result = gen.next()
+        
+        then:
+        result.number.getClass() == type
+        result.number == expected
+
+        where:
+        val                                                               | type    | expected | text
+        add(Byte, constant((byte) 3), constant((byte) 5))                 | Byte    | 8        | "two byte constants"
+        add(Short, constant((short) 10), constant((short) 33))            | Short   | 43       | "two short constants"
+        add(Integer, constant(5), constant(10))                           | Integer | 15       | "two integer constants"
+        add(Long, constant(20L), constant(15L))                           | Long    | 35L      | "two long constants"
+        add(Float, constant(1.5f), constant(3.5f))                        | Float   | 5.0f     | "two float constants"
+        add(Double, constant(2.2d), constant(0.3d))                       | Double  | 2.5d     | "two double constants"
+        add(Long, constant(10L), add(Integer, constant(5), constant(20))) | Long    | 35L      | "nested add method"
+    }
+
+    @Unroll
+    def "use subtraction with #text"() {
+        given:
+        def gen = new ObjectGeneratorBuilder()
+        .prop("number", val).build()
+
+        when:
+        def result = gen.next()
+        
+        then:
+        result.number.getClass() == type
+        result.number == expected
+
+        where:
+        val                                                                         | type    | expected | text
+        subtract(Byte, constant((byte) 5), constant((byte) 5))                      | Byte    | 0        | "two byte constants"
+        subtract(Short, constant((short) 40), constant((short) 33))                 | Short   | 7        | "two short constants"
+        subtract(Integer, constant(10), constant(5))                                | Integer | 5        | "two integer constants"
+        subtract(Long, constant(20L), constant(15L))                                | Long    | 5L       | "two long constants"
+        subtract(Float, constant(1.5f), constant(3.5f))                             | Float   | -2.0f    | "two float constants"
+        subtract(Double, constant(2.1d), constant(0.3d))                            | Double  | 1.8d     | "two double constants"
+        subtract(Long, constant(20L), subtract(Integer, constant(15), constant(3))) | Long    | 8L       | "nested subtract method"
+    }
+
+    @Unroll
+    def "use multiplication with #text"() {
+        given:
+        def gen = new ObjectGeneratorBuilder()
+        .prop("number", val).build()
+
+        when:
+        def result = gen.next()
+        
+        then:
+        result.number.getClass() == type
+        result.number == expected
+
+        where:
+        val                                                                         | type    | expected | text
+        multiply(Byte, constant((byte) 5), constant((byte) 5))                      | Byte    | 25       | "two byte constants"
+        multiply(Short, constant((short) 4), constant((short) 33))                  | Short   | 132      | "two short constants"
+        multiply(Integer, constant(10), constant(5))                                | Integer | 50       | "two integer constants"
+        multiply(Long, constant(20L), constant(15L))                                | Long    | 300L     | "two long constants"
+        multiply(Float, constant(10.0f), constant(3.5f))                            | Float   | 35f      | "two float constants"
+        multiply(Double, constant(2.1d), constant(0.5d))                            | Double  | 1.05d    | "two double constants"
+        multiply(Long, constant(20L), multiply(Integer, constant(15), constant(3))) | Long    | 900L     | "nested multiply method"
+    }
+
+    @Unroll
+    def "use division with #text"() {
+        given:
+        def gen = new ObjectGeneratorBuilder()
+        .prop("number", val).build()
+
+        when:
+        def result = gen.next()
+        
+        then:
+        result.number.getClass() == type
+        result.number == expected
+
+        where:
+        val                                                                     | type    | expected | text
+        divide(Byte, constant((byte) 5), constant((byte) 5))                    | Byte    | 1        | "two byte constants"
+        divide(Short, constant((short) 40), constant((short) 33))               | Short   | 1        | "two short constants"
+        divide(Integer, constant(10), constant(5))                              | Integer | 2        | "two integer constants"
+        divide(Long, constant(20L), constant(15L))                              | Long    | 1L       | "two long constants"
+        divide(Float, constant(14.0f), constant(3.5f))                          | Float   | 4.0f     | "two float constants"
+        divide(Double, constant(21d), constant(0.3d))                           | Double  | 70.0d    | "two double constants"
+        divide(Long, constant(20L), divide(Integer, constant(15), constant(3))) | Long    | 4L       | "nested divide method"
     }
 
     def "use exactly"() {

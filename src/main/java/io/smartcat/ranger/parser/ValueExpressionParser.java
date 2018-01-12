@@ -10,20 +10,20 @@ import org.parboiled.Rule;
 
 import io.smartcat.ranger.core.CircularRangeValueFactory;
 import io.smartcat.ranger.core.CircularValue;
-import io.smartcat.ranger.core.GetterTransformer;
+import io.smartcat.ranger.core.ConstantValue;
 import io.smartcat.ranger.core.DiscreteValue;
 import io.smartcat.ranger.core.ExactWeightedValue;
 import io.smartcat.ranger.core.ExactWeightedValue.CountValuePair;
+import io.smartcat.ranger.core.GetterTransformer;
 import io.smartcat.ranger.core.JsonTransformer;
 import io.smartcat.ranger.core.ListValue;
-import io.smartcat.ranger.core.RandomLengthListValue;
 import io.smartcat.ranger.core.NowDateValue;
 import io.smartcat.ranger.core.NowLocalDateTimeValue;
 import io.smartcat.ranger.core.NowLocalDateValue;
 import io.smartcat.ranger.core.NowValue;
 import io.smartcat.ranger.core.NullValue;
-import io.smartcat.ranger.core.ConstantValue;
 import io.smartcat.ranger.core.RandomContentStringValue;
+import io.smartcat.ranger.core.RandomLengthListValue;
 import io.smartcat.ranger.core.Range;
 import io.smartcat.ranger.core.RangeValue;
 import io.smartcat.ranger.core.RangeValueFactory;
@@ -35,6 +35,30 @@ import io.smartcat.ranger.core.Value;
 import io.smartcat.ranger.core.ValueProxy;
 import io.smartcat.ranger.core.WeightedValue;
 import io.smartcat.ranger.core.WeightedValue.WeightedValuePair;
+import io.smartcat.ranger.core.arithmetic.AdditionValueByte;
+import io.smartcat.ranger.core.arithmetic.AdditionValueDouble;
+import io.smartcat.ranger.core.arithmetic.AdditionValueFloat;
+import io.smartcat.ranger.core.arithmetic.AdditionValueInteger;
+import io.smartcat.ranger.core.arithmetic.AdditionValueLong;
+import io.smartcat.ranger.core.arithmetic.AdditionValueShort;
+import io.smartcat.ranger.core.arithmetic.DivisionValueByte;
+import io.smartcat.ranger.core.arithmetic.DivisionValueDouble;
+import io.smartcat.ranger.core.arithmetic.DivisionValueFloat;
+import io.smartcat.ranger.core.arithmetic.DivisionValueInteger;
+import io.smartcat.ranger.core.arithmetic.DivisionValueLong;
+import io.smartcat.ranger.core.arithmetic.DivisionValueShort;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueByte;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueDouble;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueFloat;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueInteger;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueLong;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueShort;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueByte;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueDouble;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueFloat;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueInteger;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueLong;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueShort;
 import io.smartcat.ranger.distribution.Distribution;
 import io.smartcat.ranger.distribution.NormalDistribution;
 import io.smartcat.ranger.distribution.UniformDistribution;
@@ -748,6 +772,46 @@ public class ValueExpressionParser extends BaseParser<Object> {
     }
 
     /**
+     * Addition value definition.
+     *
+     * @return Addition value definition rule.
+     */
+    public Rule additionValue() {
+        return Sequence(function("add", Sequence(stringLiteral(), comma(), value(), comma(), value())),
+                push(createAdditionValue()));
+    }
+
+    /**
+     * Subtraction value definition.
+     *
+     * @return Subtraction value definition rule.
+     */
+    public Rule subtractionValue() {
+        return Sequence(function("subtract", Sequence(stringLiteral(), comma(), value(), comma(), value())),
+                push(createSubtractionValue()));
+    }
+
+    /**
+     * Multiplication value definition.
+     *
+     * @return Multiplication value definition rule.
+     */
+    public Rule multiplicationValue() {
+        return Sequence(function("multiply", Sequence(stringLiteral(), comma(), value(), comma(), value())),
+                push(createMultiplicationValue()));
+    }
+
+    /**
+     * Division value definition.
+     *
+     * @return Division value definition rule.
+     */
+    public Rule divisionValue() {
+        return Sequence(function("divide", Sequence(stringLiteral(), comma(), value(), comma(), value())),
+                push(createDivisionValue()));
+    }
+
+    /**
      * Generator definition.
      *
      * @return Generator definition rule.
@@ -755,7 +819,8 @@ public class ValueExpressionParser extends BaseParser<Object> {
     public Rule generator() {
         return FirstOf(discreteValue(), rangeValue(), uuidValue(), circularValue(), circularRangeValue(), listValue(),
                 randomLengthListValue(), weightedValue(), exactWeightedValue(), randomContentStringValue(), now(),
-                nowDate(), nowLocalDate(), nowLocalDateTime());
+                nowDate(), nowLocalDate(), nowLocalDateTime(), additionValue(), subtractionValue(),
+                multiplicationValue(), divisionValue());
     }
 
     /**
@@ -934,6 +999,118 @@ public class ValueExpressionParser extends BaseParser<Object> {
     protected RandomContentStringValue createRandomContentStringValue() {
         return peek() instanceof List ? new RandomContentStringValue((Value<Integer>) pop(1), (List) pop())
                 : new RandomContentStringValue((Value<Integer>) pop());
+    }
+
+    /**
+     * Creates addition value.
+     *
+     * @return An addition value.
+     */
+    @SuppressWarnings("rawtypes")
+    protected Object createAdditionValue() {
+        String type = (String) pop(2);
+        Value summand1 = (Value) pop(1);
+        Value summand2 = (Value) pop();
+        switch (type) {
+            case "byte":
+                return new AdditionValueByte(summand1, summand2);
+            case "short":
+                return new AdditionValueShort(summand1, summand2);
+            case "int":
+                return new AdditionValueInteger(summand1, summand2);
+            case "long":
+                return new AdditionValueLong(summand1, summand2);
+            case "float":
+                return new AdditionValueFloat(summand1, summand2);
+            case "double":
+                return new AdditionValueDouble(summand1, summand2);
+            default:
+                throw new RuntimeException("Unsupported type for addition value. Type: " + type);
+        }
+    }
+
+    /**
+     * Creates subtraction value.
+     *
+     * @return An subtraction value.
+     */
+    @SuppressWarnings("rawtypes")
+    protected Object createSubtractionValue() {
+        String type = (String) pop(2);
+        Value minuend = (Value) pop(1);
+        Value subtrahend = (Value) pop();
+        switch (type) {
+            case "byte":
+                return new SubtractionValueByte(minuend, subtrahend);
+            case "short":
+                return new SubtractionValueShort(minuend, subtrahend);
+            case "int":
+                return new SubtractionValueInteger(minuend, subtrahend);
+            case "long":
+                return new SubtractionValueLong(minuend, subtrahend);
+            case "float":
+                return new SubtractionValueFloat(minuend, subtrahend);
+            case "double":
+                return new SubtractionValueDouble(minuend, subtrahend);
+            default:
+                throw new RuntimeException("Unsupported type for subtraction value. Type: " + type);
+        }
+    }
+
+    /**
+     * Creates multiplication value.
+     *
+     * @return An multiplication value.
+     */
+    @SuppressWarnings("rawtypes")
+    protected Object createMultiplicationValue() {
+        String type = (String) pop(2);
+        Value factor1 = (Value) pop(1);
+        Value factor2 = (Value) pop();
+        switch (type) {
+            case "byte":
+                return new MultiplicationValueByte(factor1, factor2);
+            case "short":
+                return new MultiplicationValueShort(factor1, factor2);
+            case "int":
+                return new MultiplicationValueInteger(factor1, factor2);
+            case "long":
+                return new MultiplicationValueLong(factor1, factor2);
+            case "float":
+                return new MultiplicationValueFloat(factor1, factor2);
+            case "double":
+                return new MultiplicationValueDouble(factor1, factor2);
+            default:
+                throw new RuntimeException("Unsupported type for multplication value. Type: " + type);
+        }
+    }
+
+    /**
+    * Creates division value.
+    *
+    * @return An division value.
+    */
+    @SuppressWarnings("rawtypes")
+    protected Object createDivisionValue() {
+        String type = (String) pop(2);
+        Value dividend = (Value) pop(1);
+        Value divisor = (Value) pop();
+        switch (type) {
+            case "byte":
+                return new DivisionValueByte(dividend, divisor);
+            case "short":
+                return new DivisionValueShort(dividend, divisor);
+            case "int":
+                return new DivisionValueInteger(dividend, divisor);
+            case "long":
+                return new DivisionValueLong(dividend, divisor);
+            case "float":
+                return new DivisionValueFloat(dividend, divisor);
+            case "double":
+                return new DivisionValueDouble(dividend, divisor);
+            default:
+                throw new RuntimeException("Unsupported type for division value. Type: " + type);
+        }
     }
 
     /**

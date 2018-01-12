@@ -363,6 +363,34 @@ These functions return current time:
 * `nowLocalDate()` returns `LocalDate`
 * `nowLocalDateTime()` returns `LocalDateTime`
 
+## Arithmetic functions
+
+These functions perform arithmetic operations on provided values:
+* `add('byte', 4, random(1..10))` returns `byte` value from 5 to 14
+* `add('short', 10, 5)` returns `short` value 15
+* `add('int', 10, add('int', 3, 4))` returns `int` value 17
+* `add('long', long(86400000), now())` returns `long` current millis one day in future
+* `add('float', float(3.2), 4.4)` returns `float` value 7.6
+* `add('double', 3.2, 20)` returns `double` value 23.2
+* `subtract('byte', 4, 2)` returns `byte` value 2
+* `subtract('short', 4, 2)` returns `short` value 2
+* `subtract('int', random(0..100), 10)` returns `int` value from -10 to 90
+* `subtract('long', now(), long(345600000))` returns `long` current millis 4 days in past
+* `subtract('float', 1, 3.2)` returns `float` value -2.2
+* `subtract('double', 1000.1, 2)` returns `double` value 998.1
+* `multiply('byte', 4, 2)` returns `byte` value 8
+* `multiply('short', 1, 10)` returns `short` value 10
+* `multiply('int', 60, 60)` returns `int` value 3600
+* `multiply('long', circular([1, 2, 3]), 5)` returns `long` values 5, 10, 15, 5, ...
+* `multiply('float', 44, 0.05)` returns `float` value 2.2
+* `multiply('double', 4, 2)` returns `double` value 8
+* `divide('byte', 4, 2)` returns `byte` value 2
+* `divide('short', 4, 2)` returns `short` value 2
+* `divide('int', 4, 2)` returns `int` value 2
+* `divide('long', 4, 2)` returns `long` value 2
+* `divide('float', 4, 2)` returns `float` value 2
+* `divide('double', 4, 2)` returns `double` value 2
+
 ## String transformer
 
 Creates a formatted string using the specified format string and values.

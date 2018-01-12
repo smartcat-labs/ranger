@@ -1219,6 +1219,136 @@ output: \$value
         result.format(formatter) == LocalDateTime.now().format(formatter)
     }
 
+    def "should parse now subtracted by 4 days value"() {
+        given:
+        def config = """
+values:
+  value: subtract("long", now(), 345600000)
+output: \$value
+"""
+        def dataGenerator = buildGenerator(config)
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd")
+
+        when:
+        def result = dataGenerator.next()
+
+        then:
+        result instanceof Long
+        formatter.format(new Date(result)) == formatter.format(new Date().minus(4))
+    }
+
+    @Unroll
+    def "should parse addition value #expression"() {
+        given:
+        def config = """
+values:
+  value: $expression
+output: \$value
+"""
+        def dataGenerator = buildGenerator(config)
+
+        when:
+        def result = dataGenerator.next()
+
+        then:
+        result.getClass() == clazz
+        result == expected
+
+        where:
+        expression                          | expected   | clazz
+        "add('byte', 2, 5)"                 | (byte) 7   | Byte
+        "add('short', 3, 14)"               | (short) 17 | Short
+        "add('int', 3, 1)"                  | 4          | Integer
+        "add('long', 1000, 43)"             | 1043       | Long
+        "add('float', 3, 2.5)"              | 5.5        | Float
+        "add('double', 0.01, 0.1)"          | 0.11d      | Double
+        "add('int', add('int', 4, 12), 31)" | 47         | Integer
+    }
+
+    @Unroll
+    def "should parse subtraction value #expression"() {
+        given:
+        def config = """
+values:
+  value: $expression
+output: \$value
+"""
+        def dataGenerator = buildGenerator(config)
+
+        when:
+        def result = dataGenerator.next()
+
+        then:
+        result.getClass() == clazz
+        result == expected
+
+        where:
+        expression                                     | expected    | clazz
+        "subtract('byte', 2, 5)"                       | (byte) -3   | Byte
+        "subtract('short', 3, 14)"                     | (short) -11 | Short
+        "subtract('int', 3, 1)"                        | 2           | Integer
+        "subtract('long', 1000, 43)"                   | 957         | Long
+        "subtract('float', 3, 2.5)"                    | 0.5         | Float
+        "subtract('double', 1.0, 0.1)"                 | 0.9d        | Double
+        "subtract('int', subtract('int', 50, 12), 31)" | 7           | Integer
+    }
+
+    @Unroll
+    def "should parse multiplication value #expression"() {
+        given:
+        def config = """
+values:
+  value: $expression
+output: \$value
+"""
+        def dataGenerator = buildGenerator(config)
+
+        when:
+        def result = dataGenerator.next()
+
+        then:
+        result.getClass() == clazz
+        result == expected
+
+        where:
+        expression                                    | expected   | clazz
+        "multiply('byte', 2, 5)"                      | (byte) 10  | Byte
+        "multiply('short', 3, 14)"                    | (short) 42 | Short
+        "multiply('int', 3, 1)"                       | 3          | Integer
+        "multiply('long', 10, 43)"                    | 430        | Long
+        "multiply('float', 3, 2.5)"                   | 7.5        | Float
+        "multiply('double', 0.01, 0.1)"               | 0.001d     | Double
+        "multiply('int', multiply('int', 4, 12), 0)"  | 0          | Integer
+    }
+
+    @Unroll
+    def "should parse division value #expression"() {
+        given:
+        def config = """
+values:
+  value: $expression
+output: \$value
+"""
+        def dataGenerator = buildGenerator(config)
+
+        when:
+        def result = dataGenerator.next()
+
+        then:
+        result.getClass() == clazz
+        result == expected
+
+        where:
+        expression                                  | expected   | clazz
+        "divide('byte', 2, 5)"                      | (byte) 0   | Byte
+        "divide('short', 14, 3)"                    | (short) 4  | Short
+        "divide('int', 3, 1)"                       | 3          | Integer
+        "divide('long', 43, 10)"                    | 4          | Long
+        "divide('float', 10, 2.5)"                  | 4          | Float
+        "divide('double', 0.1, 0.1)"                | 1.0d       | Double
+        "divide('int', divide('int', 15, 3), 5)"    | 1          | Integer
+    }
+
     @Unroll
     def "should parse weighted value #expression"() {
         given:

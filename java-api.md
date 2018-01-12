@@ -279,6 +279,34 @@ These methods return current time:
 * `nowLocalDate()` returns `LocalDate`
 * `nowLocalDateTime()` returns `LocalDateTime`
 
+## Arithmetic methods
+
+These methods perform arithmetic operations on provided values:
+* `add(Byte.class, 4, random(1, 10))` returns `Byte` value from 5 to 14
+* `add(Short.class, 10, 5)` returns `Short` value 15
+* `add(Integer.class, 10, add(Integer.class, 3, 4))` returns `Integer` value 17
+* `add(Long.class, 86400000L, now())` returns `Long` current millis one day in future
+* `add(Float.class, 3.2f, 4.4)` returns `Float` value 7.6
+* `add(Double.class, 3.2, 20)` returns `Double` value 23.2
+* `subtract(Byte.class, 4, 2)` returns `Byte` value 2
+* `subtract(Short.class, 4, 2)` returns `Short` value 2
+* `subtract(Integer.class, random(0, 100), 10)` returns `Integer` value from -10 to 90
+* `subtract(Long.class, now(), 345600000L)` returns `Long` current millis 4 days in past
+* `subtract(Float.class, 1, 3.2)` returns `Float` value -2.2
+* `subtract(Double.class, 1000.1, 2)` returns `Double` value 998.1
+* `multiply(Byte.class, 4, 2)` returns `Byte` value 8
+* `multiply(Short.class, 1, 10)` returns `short` value 10
+* `multiply(Integer.class, 60, 60)` returns `Integer` value 3600
+* `multiply(Long.class, circular(1, 2, 3), 5)` returns `Long` values 5, 10, 15, 5, ...
+* `multiply(Float.class, 44, 0.05)` returns `Float` value 2.2
+* `multiply(Double.class, 4, 2)` returns `Double` value 8
+* `divide(Byte.class, 4, 2)` returns `Byte` value 2
+* `divide(Short.class, 4, 2)` returns `Short` value 2
+* `divide(Integer.class, 4, 2)` returns `Integer` value 2
+* `divide(Long.class, 4, 2)` returns `Long` value 2
+* `divide(Float.class, 4, 2)` returns `Float` value 2
+* `divide(Double.class, 4, 2)` returns `Double` value 2
+
 ## String transformer
 
 Creates a formatted string using the specified format string and values.

@@ -14,6 +14,7 @@ import io.smartcat.ranger.core.CircularRangeValueInt;
 import io.smartcat.ranger.core.CircularRangeValueLong;
 import io.smartcat.ranger.core.CircularRangeValueShort;
 import io.smartcat.ranger.core.CircularValue;
+import io.smartcat.ranger.core.ConstantValue;
 import io.smartcat.ranger.core.DiscreteValue;
 import io.smartcat.ranger.core.ExactWeightedValue;
 import io.smartcat.ranger.core.ExactWeightedValue.CountValuePair;
@@ -24,7 +25,6 @@ import io.smartcat.ranger.core.NowDateValue;
 import io.smartcat.ranger.core.NowLocalDateTimeValue;
 import io.smartcat.ranger.core.NowLocalDateValue;
 import io.smartcat.ranger.core.NowValue;
-import io.smartcat.ranger.core.ConstantValue;
 import io.smartcat.ranger.core.RandomContentStringValue;
 import io.smartcat.ranger.core.RandomLengthListValue;
 import io.smartcat.ranger.core.RangeValue;
@@ -43,6 +43,30 @@ import io.smartcat.ranger.core.UUIDValue;
 import io.smartcat.ranger.core.Value;
 import io.smartcat.ranger.core.WeightedValue;
 import io.smartcat.ranger.core.WeightedValue.WeightedValuePair;
+import io.smartcat.ranger.core.arithmetic.AdditionValueByte;
+import io.smartcat.ranger.core.arithmetic.AdditionValueDouble;
+import io.smartcat.ranger.core.arithmetic.AdditionValueFloat;
+import io.smartcat.ranger.core.arithmetic.AdditionValueInteger;
+import io.smartcat.ranger.core.arithmetic.AdditionValueLong;
+import io.smartcat.ranger.core.arithmetic.AdditionValueShort;
+import io.smartcat.ranger.core.arithmetic.DivisionValueByte;
+import io.smartcat.ranger.core.arithmetic.DivisionValueDouble;
+import io.smartcat.ranger.core.arithmetic.DivisionValueFloat;
+import io.smartcat.ranger.core.arithmetic.DivisionValueInteger;
+import io.smartcat.ranger.core.arithmetic.DivisionValueLong;
+import io.smartcat.ranger.core.arithmetic.DivisionValueShort;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueByte;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueDouble;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueFloat;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueInteger;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueLong;
+import io.smartcat.ranger.core.arithmetic.MultiplicationValueShort;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueByte;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueDouble;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueFloat;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueInteger;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueLong;
+import io.smartcat.ranger.core.arithmetic.SubtractionValueShort;
 import io.smartcat.ranger.distribution.Distribution;
 
 /**
@@ -62,7 +86,7 @@ public class BuilderMethods {
      * @return An instance of {@link ObjectGenerator}.
      */
     public static <T> ObjectGenerator<T> constant(T value) {
-        return new ObjectGenerator<>(ConstantValue.of(value));
+        return wrap(ConstantValue.of(value));
     }
 
     /**
@@ -418,7 +442,7 @@ public class BuilderMethods {
      * @return An instance of {@link ObjectGenerator} which generates current time in milliseconds.
      */
     public static ObjectGenerator<Long> now() {
-        return new ObjectGenerator<>(new NowValue());
+        return wrap(new NowValue());
     }
 
     /**
@@ -427,7 +451,7 @@ public class BuilderMethods {
      * @return An instance of {@link ObjectGenerator} which generates current date-time as {@link Date} object.
      */
     public static ObjectGenerator<Date> nowDate() {
-        return new ObjectGenerator<>(new NowDateValue());
+        return wrap(new NowDateValue());
     }
 
     /**
@@ -436,7 +460,7 @@ public class BuilderMethods {
      * @return An instance of {@link ObjectGenerator} which generates current date as {@link LocalDate} object.
      */
     public static ObjectGenerator<LocalDate> nowLocalDate() {
-        return new ObjectGenerator<>(new NowLocalDateValue());
+        return wrap(new NowLocalDateValue());
     }
 
     /**
@@ -445,7 +469,122 @@ public class BuilderMethods {
      * @return An instance of {@link ObjectGenerator} which generates current date-time as {@link LocalDateTime} object.
      */
     public static ObjectGenerator<LocalDateTime> nowLocalDateTime() {
-        return new ObjectGenerator<>(new NowLocalDateTimeValue());
+        return wrap(new NowLocalDateTimeValue());
+    }
+
+    /**
+     * Creates an instance of {@link ObjectGenerator} which adds up values of given object generators.
+     *
+     * @param type Type object generator will return.
+     * @param summand1 First object generator for addition.
+     * @param summand2 Second object generator for addition.
+     * @param <T> Type object generator will return.
+     * @return An instance of {@link ObjectGenerator} which adds up values of given object generators.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ObjectGenerator<T> add(Class<T> type, ObjectGenerator<T> summand1, ObjectGenerator<T> summand2) {
+        if (type.equals(Byte.class)) {
+                return (ObjectGenerator<T>) wrap(new AdditionValueByte(summand1.value, summand2.value));
+        } else if (type.equals(Short.class)) {
+            return (ObjectGenerator<T>) wrap(new AdditionValueShort(summand1.value, summand2.value));
+        } else if (type.equals(Integer.class)) {
+            return (ObjectGenerator<T>) wrap(new AdditionValueInteger(summand1.value, summand2.value));
+        } else if (type.equals(Long.class)) {
+            return (ObjectGenerator<T>) wrap(new AdditionValueLong(summand1.value, summand2.value));
+        } else if (type.equals(Float.class)) {
+            return (ObjectGenerator<T>) wrap(new AdditionValueFloat(summand1.value, summand2.value));
+        } else if (type.equals(Double.class)) {
+            return (ObjectGenerator<T>) wrap(new AdditionValueDouble(summand1.value, summand2.value));
+        } else {
+            throw new RuntimeException("Type: " + type.getName() + " not supported.");
+        }
+    }
+
+    /**
+     * Creates an instance of {@link ObjectGenerator} which subtracts values of given object generators.
+     *
+     * @param type Type object generator will return.
+     * @param minuend Object generator which will be used as minuend.
+     * @param subtrahend Object generator which will be used as subtrahend
+     * @param <T> Type object generator will return.
+     * @return An instance of {@link ObjectGenerator} which subtracts values of given object generators.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ObjectGenerator<T> subtract(Class<T> type, ObjectGenerator<T> minuend,
+            ObjectGenerator<T> subtrahend) {
+        if (type.equals(Byte.class)) {
+                return (ObjectGenerator<T>) wrap(new SubtractionValueByte(minuend.value, subtrahend.value));
+        } else if (type.equals(Short.class)) {
+            return (ObjectGenerator<T>) wrap(new SubtractionValueShort(minuend.value, subtrahend.value));
+        } else if (type.equals(Integer.class)) {
+            return (ObjectGenerator<T>) wrap(new SubtractionValueInteger(minuend.value, subtrahend.value));
+        } else if (type.equals(Long.class)) {
+            return (ObjectGenerator<T>) wrap(new SubtractionValueLong(minuend.value, subtrahend.value));
+        } else if (type.equals(Float.class)) {
+            return (ObjectGenerator<T>) wrap(new SubtractionValueFloat(minuend.value, subtrahend.value));
+        } else if (type.equals(Double.class)) {
+            return (ObjectGenerator<T>) wrap(new SubtractionValueDouble(minuend.value, subtrahend.value));
+        } else {
+            throw new RuntimeException("Type: " + type.getName() + " not supported.");
+        }
+    }
+
+    /**
+     * Creates an instance of {@link ObjectGenerator} which multiplies values of given object generators.
+     *
+     * @param type Type object generator will return.
+     * @param factor1 First object generator for multiplication.
+     * @param factor2 Second object generator for multiplication.
+     * @param <T> Type object generator will return.
+     * @return An instance of {@link ObjectGenerator} which multiplies values of given object generators.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ObjectGenerator<T> multiply(Class<T> type, ObjectGenerator<T> factor1,
+            ObjectGenerator<T> factor2) {
+        if (type.equals(Byte.class)) {
+                return (ObjectGenerator<T>) wrap(new MultiplicationValueByte(factor1.value, factor2.value));
+        } else if (type.equals(Short.class)) {
+            return (ObjectGenerator<T>) wrap(new MultiplicationValueShort(factor1.value, factor2.value));
+        } else if (type.equals(Integer.class)) {
+            return (ObjectGenerator<T>) wrap(new MultiplicationValueInteger(factor1.value, factor2.value));
+        } else if (type.equals(Long.class)) {
+            return (ObjectGenerator<T>) wrap(new MultiplicationValueLong(factor1.value, factor2.value));
+        } else if (type.equals(Float.class)) {
+            return (ObjectGenerator<T>) wrap(new MultiplicationValueFloat(factor1.value, factor2.value));
+        } else if (type.equals(Double.class)) {
+            return (ObjectGenerator<T>) wrap(new MultiplicationValueDouble(factor1.value, factor2.value));
+        } else {
+            throw new RuntimeException("Type: " + type.getName() + " not supported.");
+        }
+    }
+
+    /**
+     * Creates an instance of {@link ObjectGenerator} which divides values of given object generators.
+     *
+     * @param type Type object generator will return.
+     * @param dividend Object generator which will be used as dividend.
+     * @param divisor Object generator which will be used as divisor.
+     * @param <T> Type object generator will return.
+     * @return An instance of {@link ObjectGenerator} which divides values of given object generators.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> ObjectGenerator<T> divide(Class<T> type, ObjectGenerator<T> dividend,
+            ObjectGenerator<T> divisor) {
+        if (type.equals(Byte.class)) {
+                return (ObjectGenerator<T>) wrap(new DivisionValueByte(dividend.value, divisor.value));
+        } else if (type.equals(Short.class)) {
+            return (ObjectGenerator<T>) wrap(new DivisionValueShort(dividend.value, divisor.value));
+        } else if (type.equals(Integer.class)) {
+            return (ObjectGenerator<T>) wrap(new DivisionValueInteger(dividend.value, divisor.value));
+        } else if (type.equals(Long.class)) {
+            return (ObjectGenerator<T>) wrap(new DivisionValueLong(dividend.value, divisor.value));
+        } else if (type.equals(Float.class)) {
+            return (ObjectGenerator<T>) wrap(new DivisionValueFloat(dividend.value, divisor.value));
+        } else if (type.equals(Double.class)) {
+            return (ObjectGenerator<T>) wrap(new DivisionValueDouble(dividend.value, divisor.value));
+        } else {
+            throw new RuntimeException("Type: " + type.getName() + " not supported.");
+        }
     }
 
     /**
