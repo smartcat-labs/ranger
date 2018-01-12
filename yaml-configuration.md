@@ -244,6 +244,17 @@ This would create `ObjectGenerator` which will generate following sequence:
 .
 ```
 
+## Empty list
+
+Generates empty list.
+
+```yaml
+values:
+  names: list()
+```
+
+This generates empty list.
+
 ## Random Length List
 
 Generates random length list out of specified `ObjectGenerator`.

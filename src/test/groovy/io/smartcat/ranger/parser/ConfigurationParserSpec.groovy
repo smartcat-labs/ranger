@@ -1085,6 +1085,19 @@ output: \$value
         dataGenerator.next() == ["Ema", "Mike", "Ned", "Lisa"]
     }
 
+    def "should parse empty list value"() {
+        when:
+        def config = """
+values:
+  value: emptyList()
+output: \$value
+"""
+        def dataGenerator = buildGenerator(config)
+
+        then:
+        dataGenerator.next() == []
+    }
+
     def "should parse random length list value with no distribution"() {
         given:
         def config = """

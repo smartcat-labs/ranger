@@ -287,6 +287,17 @@ class BuilderMethodsSpec extends Specification {
         result2.names == ["Peter", "Rodger", "Steve"]
     }
 
+    def "use empty list"() {
+        given:
+        def gen = new ObjectGeneratorBuilder().prop("names", emptyList()).build()
+
+        when:
+        def result = gen.next()
+
+        then:
+        result.names == []
+    }
+
     def "use random length list"() {
         given:
         def gen = new ObjectGeneratorBuilder().prop("numbers", list(5, 9, random(range(10, 100)))).build()

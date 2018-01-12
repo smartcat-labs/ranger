@@ -162,6 +162,16 @@ Any variation would create `ObjectGenerator` which will generate following seque
 .
 ```
 
+## Empty list
+
+Generates empty list.
+
+```java
+emptyList()
+```
+
+Generates empty list every time.
+
 ## Random Length List
 
 Generates random length list out of specified `ObjectGenerator`.

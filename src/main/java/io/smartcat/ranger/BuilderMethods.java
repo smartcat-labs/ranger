@@ -16,6 +16,7 @@ import io.smartcat.ranger.core.CircularRangeValueShort;
 import io.smartcat.ranger.core.CircularValue;
 import io.smartcat.ranger.core.ConstantValue;
 import io.smartcat.ranger.core.DiscreteValue;
+import io.smartcat.ranger.core.EmptyListValue;
 import io.smartcat.ranger.core.ExactWeightedValue;
 import io.smartcat.ranger.core.ExactWeightedValue.CountValuePair;
 import io.smartcat.ranger.core.GetterTransformer;
@@ -333,6 +334,16 @@ public class BuilderMethods {
      */
     public static <T> ObjectGenerator<List<T>> list(List<T> values) {
         return wrap(new ListValue<>(unwrap(values)));
+    }
+
+    /**
+     * Creates an instance of {@link ObjectGenerator} which generates empty list.
+     *
+     * @param <T> Type instance of {@link ObjectGenerator} will generate.
+     * @return An instance of {@link ObjectGenerator} which generates empty list.
+     */
+    public static <T> ObjectGenerator<List<T>> emptyList() {
+        return wrap(new EmptyListValue<>());
     }
 
     /**
