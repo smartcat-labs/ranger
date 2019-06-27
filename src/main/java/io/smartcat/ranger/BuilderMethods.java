@@ -866,11 +866,11 @@ public class BuilderMethods {
     }
 
     /**
-     * Range.
+     * Range with a beginning and an end.
      *
      * @param <T> Type of the range.
      */
-    private static class Range<T> {
+    public static class Range<T> {
 
         private final T beginning;
         private final T end;
@@ -892,7 +892,7 @@ public class BuilderMethods {
      *
      * @param <T> Type of value count pair contains.
      */
-    private static class CountPair<T> {
+    public static class CountPair<T> {
 
         private final Value<T> value;
         private final int count;
@@ -908,7 +908,7 @@ public class BuilderMethods {
      *
      * @param <T> Type of value weight pair contains.
      */
-    private static class WeightPair<T> {
+    public static class WeightPair<T> {
 
         private final Value<T> value;
         private final double weight;
