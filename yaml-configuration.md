@@ -519,8 +519,8 @@ Creates a formatted string using the specified format string and values.
 
 ```yaml
 values:
-  name: random("Peter", "Stephen", "Charles")
-  age: random(15.40)
+  name: random(["Peter", "Stephen", "Charles"])
+  age: random(15..40)
   text: string("{} is {} years old.", $name, $age)
 output: $text
 ```
@@ -536,8 +536,7 @@ Transforms long, Date, LocalDate and LocalDateTime value into date format.
 
 ```yaml
 values:
-  date: time("yyyy-MM-dd", random(1483228800000, 1514764800000))
-  date: time("yyyy-MM-dd HH:mm:ss.SSS", nowDate())
+  date: time("yyyy-MM-dd", random(1483228800000..1514764800000))
 output: $date
 ```
 
@@ -599,7 +598,7 @@ values:
   heavyLoad:
     type: HEAVY
     value: random(101..1000)
-  randomLoad: random($lightLoad, $mediumLoad, $heavyLoad)
+  randomLoad: random([$lightLoad, $mediumLoad, $heavyLoad])
   load:
     additionalField: "Some value"
     additionalField2: true
